@@ -126,7 +126,7 @@ replacer_t strip_callcheck{ addresses::callcheck_addy };
 
 int cool2(std::uintptr_t rl)
 {
-	strip_callcheck.revert();
+	//strip_callcheck.revert();
 	rbx_pushvfstring(rl, "%s", "you somehow successfully made this work!");
 	return 1;
 }
@@ -151,7 +151,7 @@ void rbx_testfunc(std::uintptr_t rl)
 
 	replace_func.write(&a, 4);
 	replace_string.write(func_name, 7);
-	strip_callcheck.write(&callcheck_replace, 2);
+	//strip_callcheck.write(&callcheck_replace, 2);
 
 	__asm {
 		mov edi, finished
