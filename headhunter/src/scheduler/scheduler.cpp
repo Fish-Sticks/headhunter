@@ -39,6 +39,8 @@ void scheduler_t::print_jobs() const
 		std::string* job_name = reinterpret_cast<std::string*>(job + offsets::job::name);
 		output << console::color::red << "Found job: " << job_name->c_str() << "\n";
 	}
+
+	MessageBoxA(NULL, "Thank you for using headhunter, created by fishy!", "Thanks!", NULL);
 }
 
 std::uintptr_t scheduler_t::get_job_by_name(const std::string& name) const
