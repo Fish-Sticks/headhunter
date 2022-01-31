@@ -20,9 +20,17 @@ public:
 	void hook_waiting_scripts_job() const;
 	void run_script(const std::string& script) const;
 	void set_identity(std::int8_t identity) const;
+	void register_globals() const;
+	std::uintptr_t get_global_state() const;
+	void set_fps(double fps) const;
+
 
 	friend int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, int a2);
 };
 
+class roblox_encoder_t : public Luau::BytecodeEncoder
+{
+	std::uint8_t encodeOp(const std::uint8_t opcode) override;
+};
 
 extern const execution_t execution;

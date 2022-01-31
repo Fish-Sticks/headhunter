@@ -10,6 +10,7 @@ namespace func_defs
 	using rbx_output_t = void(__fastcall*)(std::int16_t output_type, const char* str);
 	using rbx_getstate_t = std::uintptr_t(__thiscall*)(std::uintptr_t SC, int* state_type);
 	using rbx_pushvfstring_t = int(__cdecl*)(std::uintptr_t rl, const char* fmt, ...);
+	using rbx_index2adr_t = std::uintptr_t*(__fastcall*)(std::uintptr_t rl, int idx);
 }
 
 namespace addresses
@@ -23,14 +24,22 @@ namespace addresses
 	const std::uintptr_t deserializer_func_addy = current_module + 0x015EE590;
 
 	const std::uintptr_t pushcclosure_addy = current_module + 0x0160E810;
-	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x0160E995;
+	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x160EB1C;
 
-	const std::uintptr_t test_func_addy = current_module + 0x016100F0;
-	const std::uintptr_t xpcall_func_closure_addy = current_module + 0x16145d7 + 1; // *(_DWORD *)(closure + 24) = (unsigned int)sub_1AC0B90 ^ (closure + 24);// CLOSURE A
-	const std::uintptr_t xpcall_string_spot_addy = current_module + 0x2b8ab90;
+	const std::uintptr_t setglobal_addy = current_module + 0x016100F0;
+	const std::uintptr_t setglobal_exit_addy = current_module + 0x161169b;
+	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x1610143;
+	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x16104f9;
 
-	const std::uintptr_t fake_ret_addy = current_module + 0x0102DF1D;
-	const std::uintptr_t callcheck_addy = current_module + 0x165ef0a;
+	const std::uintptr_t index2adr_addy = current_module + 0x15EA6A0;
+
+	const std::uintptr_t fake_ret_addy = current_module + 0x0102DF1D; // reg jmp
+
+	const std::uintptr_t callcheck_addy_1 = current_module + 0x328D110; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x226E77; // code ptr
+	const std::uintptr_t callcheck_addy_3 = current_module + 0x165EF12; // VM callcheck
+
+	const std::uintptr_t xor_const = current_module + 0x306B5D0;
 }
 
 namespace offsets
@@ -39,6 +48,7 @@ namespace offsets
 	{
 		constexpr std::uintptr_t jobs_start = 0x12C;
 		constexpr std::uintptr_t jobs_end = 0x130;
+		constexpr std::uintptr_t fps = 0x110;
 	}
 
 	namespace job
@@ -62,5 +72,10 @@ namespace offsets
 	{
 		constexpr std::uintptr_t top = 0x18;
 		constexpr std::uintptr_t base = 0xC;
+	}
+
+	namespace luafunc
+	{
+		constexpr std::uintptr_t func = 24;
 	}
 }

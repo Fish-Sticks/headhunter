@@ -3,18 +3,16 @@
 
 #include <stack>
 #include <mutex>
+#include "functions/functions.h"
 
 std::mutex mutex;
 std::stack<std::string> script_queue;
 std::uintptr_t original_func;
 
-class roblox_encoder_t : public Luau::BytecodeEncoder
+std::uint8_t roblox_encoder_t::encodeOp(const std::uint8_t opcode)
 {
-	std::uint8_t encodeOp(const std::uint8_t opcode) override
-	{
-		return opcode * 227;
-	}
-};
+	return opcode * 227;
+}
 
 int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, int a2)
 {
@@ -36,7 +34,6 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		}
 		else
 		{
-			rbx_testfunc(rl);
 			rbx_deserialize(rl, "headhunter.exe", bytecode.c_str(), bytecode.size());
 			rbx_spawn(rl);
 			rbx_decrement_top(rl, 1);
@@ -63,6 +60,42 @@ void execution_t::run_script(const std::string& script) const
 void execution_t::set_identity(std::int8_t identity) const
 {
 	rbx_setidentity(this->scheduler->get_global_luastate(), identity);
+}
+
+void execution_t::register_globals() const
+{
+	std::uintptr_t rl = this->scheduler->get_global_luastate();
+
+	rbx_pushcclosure(rl, custom_funcs::setreadonly);
+	rbx_setglobal(rl, "setreadonly");
+
+	rbx_pushcclosure(rl, custom_funcs::getrawmetatable);
+	rbx_setglobal(rl, "getrawmetatable");
+
+	rbx_pushcclosure(rl, custom_funcs::setfpscap);
+	rbx_setglobal(rl, "setfpscap");
+
+	rbx_pushcclosure(rl, custom_funcs::setidentity);
+	rbx_setglobal(rl, "setidentity");
+
+	rbx_pushcclosure(rl, custom_funcs::getfuncaddy);
+	rbx_setglobal(rl, "getfuncaddy");
+
+	rbx_pushcclosure(rl, custom_funcs::getnamecallmethod);
+	rbx_setglobal(rl, "getnamecallmethod");
+
+	rbx_pushcclosure(rl, custom_funcs::loadstring); // also httpget
+	rbx_setglobal(rl, "loadstring");
+}
+
+std::uintptr_t execution_t::get_global_state() const
+{
+	return this->scheduler->get_global_luastate();
+}
+
+void execution_t::set_fps(double fps) const
+{
+	this->scheduler->set_fps(fps);
 }
 
 execution_t::execution_t(const scheduler_t* scheduler)

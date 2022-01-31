@@ -33,6 +33,9 @@
     <ClCompile Include="src\api\api.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\functions\functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\console\console.h">
@@ -147,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\addresses\addresses.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\functions\functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

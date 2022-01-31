@@ -80,3 +80,8 @@ void scheduler_t::hook_waiting_scripts_job(void* hook, std::uintptr_t& original_
 
 	output << console::color::green << "Hooked!\n";
 }
+
+void scheduler_t::set_fps(double fps) const
+{
+	*reinterpret_cast<double*>(this->taskscheduler + offsets::scheduler::fps) = 1 / fps;
+}

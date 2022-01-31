@@ -5,6 +5,8 @@
 #include "scheduler/scheduler.h"
 #include "execution/execution.h"
 #include "communication/communication.h"
+#include "api/api.h"
+#include "functions/functions.h"
 
 const console output{ "headhunter - fishy" };
 const scheduler_t scheduler{};
@@ -14,7 +16,7 @@ const communication_t communication{};
 void mainfunc()
 {
     output << console::color::cyan << "Welcome to headhunter! A simple exploit made by fishy.\n";
-    output << console::color::white << "Current scheduler: 0x" << (scheduler.get() - reinterpret_cast<std::uintptr_t>(GetModuleHandle(NULL))) << "\n";
+    output << console::color::white << "Current scheduler: 0x" << scheduler.get() << "\n";
 
     scheduler.print_jobs();
 
@@ -27,10 +29,23 @@ void mainfunc()
 
     output << console::color::pink << "Successfully set identity to 7!\n";
 
+    execution.register_globals();
+
+    output << console::color::pink << "Successfully registered custom funcs!\n";
+
+    std::string input;
+
+    while (std::getline(std::cin, input))
+    {
+        execution.run_script(input);
+    }
+
+/*
     while (true)
     {
-        execution.run_script(communication.read_pipe()); // note: won't show error message it'll just try to call the error msg lmao
+        execution.run_script(communication.read_pipe());
     }
+*/
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

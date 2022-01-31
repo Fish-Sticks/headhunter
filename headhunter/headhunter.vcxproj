@@ -23,6 +23,7 @@
     <ClCompile Include="src\communication\communication.cpp" />
     <ClCompile Include="src\console\console.cpp" />
     <ClCompile Include="src\execution\execution.cpp" />
+    <ClCompile Include="src\functions\functions.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\scheduler\scheduler.cpp" />
   </ItemGroup>
@@ -64,6 +65,7 @@
     <ClInclude Include="src\communication\communication.h" />
     <ClInclude Include="src\console\console.h" />
     <ClInclude Include="src\execution\execution.h" />
+    <ClInclude Include="src\functions\functions.h" />
     <ClInclude Include="src\scheduler\scheduler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -122,18 +124,20 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\</IntDir>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\vsprojects\headhunter\headhunter\luau\include\Luau;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ProjectDir)dependencies\lib</LibraryPath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
     <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
-    <SourcePath>D:\vsprojects\headhunter\headhunter\luau\src;$(SourcePath)</SourcePath>
+    <SourcePath>$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(ProjectDir)dependencies\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ProjectDir)dependencies\lib</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -166,13 +170,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\vsprojects\headhunter\headhunter\src;D:\vsprojects\headhunter\headhunter\luau\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(ProjectDir)dependencies\;$(ProjectDir)dependencies\luau;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Luau.Analysis.lib;Luau.VM.lib;Luau.Ast.lib;Luau.Compiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -186,7 +190,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\vsprojects\headhunter\headhunter\src;$(ProjectDir)dependencies\;$(ProjectDir)dependencies\luau;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;$(ProjectDir)dependencies\;$(ProjectDir)dependencies\luau;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -194,7 +198,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>Luau.Analysis.lib;Luau.VM.lib;Luau.Ast.lib;Luau.Compiler.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Luau.Analysis.lib;Luau.VM.lib;Luau.Ast.lib;Luau.Compiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

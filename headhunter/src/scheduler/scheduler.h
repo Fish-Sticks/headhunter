@@ -19,4 +19,5 @@ public:
 	std::uintptr_t get_job_by_name(const std::string& name) const;
 	void print_jobs() const;
 	void hook_waiting_scripts_job(void* hook, std::uintptr_t& original_func) const;
+	void set_fps(double fps) const;
 };
