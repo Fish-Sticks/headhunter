@@ -201,9 +201,9 @@ void rbx_setglobal(std::uintptr_t rl, const char* globalname) // todo: checkout 
 	*reinterpret_cast<std::uintptr_t*>(jmp_patch + 1) = reinterpret_cast<std::uintptr_t>(patching_cleanup) - addresses::setglobal_exit_addy - 5;
 	patch_3.write(jmp_patch, 5);
 
-	replace_func.write(&a, 4);
-	replace_string.write(func_name, 7);
-	strip_callcheck.write(&callcheck_replace, 2);
+	rbx_pushvfstring(rl, "%s", globalname); // generate key
+	key = *reinterpret_cast<std::uintptr_t**>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
+	rbx_decrement_top(rl, 1);
 
 	__asm {
 		pusha
@@ -246,7 +246,10 @@ void __declspec(naked) rbx_setglobal_jump()
 	}
 }
 
-	replace_func.revert();
-	replace_string.revert();
-	rbx_decrement_top(rl, 1);
+void __declspec(naked) patching_cleanup() // callback for hooked shit
+{
+	__asm {
+		mov esp, old_esp // this will restore stack, remember how i said up there remember memory address of after is right under esp, well that's what this does is sets up the return and removes all the old values that func we called polluted stack with
+		ret // return in asm just means jump to the address thats on the top of the stack, that being the one we pushed (push after)
+	} // this will go to the after label
 }
