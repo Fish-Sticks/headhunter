@@ -29,23 +29,18 @@ void mainfunc()
 
     output << console::color::pink << "Successfully set identity to 7!\n";
 
-    execution.register_globals();
-
-    output << console::color::pink << "Successfully registered custom funcs!\n";
-
+/*
     std::string input;
-
     while (std::getline(std::cin, input))
     {
         execution.run_script(input);
     }
+*/
 
-/*
     while (true)
     {
         execution.run_script(communication.read_pipe());
     }
-*/
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

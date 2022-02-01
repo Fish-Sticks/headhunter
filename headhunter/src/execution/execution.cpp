@@ -26,6 +26,8 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		script_queue.pop();
 		guard.unlock();
 
+		execution.register_globals();
+
 		if (bytecode.at(0) == 0)
 		{
 			std::string error("[string \"headhunter.exe\"]");
@@ -64,28 +66,37 @@ void execution_t::set_identity(std::int8_t identity) const
 
 void execution_t::register_globals() const
 {
-	std::uintptr_t rl = this->scheduler->get_global_luastate();
+	static bool registered = false;
+	if (!registered)
+	{
+		registered = true;
 
-	rbx_pushcclosure(rl, custom_funcs::setreadonly);
-	rbx_setglobal(rl, "setreadonly");
+		std::uintptr_t rl = this->scheduler->get_global_luastate();
 
-	rbx_pushcclosure(rl, custom_funcs::getrawmetatable);
-	rbx_setglobal(rl, "getrawmetatable");
+		rbx_pushcclosure(rl, custom_funcs::setreadonly);
+		rbx_setglobal(rl, "setreadonly");
 
-	rbx_pushcclosure(rl, custom_funcs::setfpscap);
-	rbx_setglobal(rl, "setfpscap");
+		rbx_pushcclosure(rl, custom_funcs::getrawmetatable);
+		rbx_setglobal(rl, "getrawmetatable");
 
-	rbx_pushcclosure(rl, custom_funcs::setidentity);
-	rbx_setglobal(rl, "setidentity");
+		rbx_pushcclosure(rl, custom_funcs::setfpscap);
+		rbx_setglobal(rl, "setfpscap");
 
-	rbx_pushcclosure(rl, custom_funcs::getfuncaddy);
-	rbx_setglobal(rl, "getfuncaddy");
+		rbx_pushcclosure(rl, custom_funcs::setidentity);
+		rbx_setglobal(rl, "setidentity");
 
-	rbx_pushcclosure(rl, custom_funcs::getnamecallmethod);
-	rbx_setglobal(rl, "getnamecallmethod");
+		rbx_pushcclosure(rl, custom_funcs::getfuncaddy);
+		rbx_setglobal(rl, "getfuncaddy");
 
-	rbx_pushcclosure(rl, custom_funcs::loadstring); // also httpget
-	rbx_setglobal(rl, "loadstring");
+		rbx_pushcclosure(rl, custom_funcs::getnamecallmethod);
+		rbx_setglobal(rl, "getnamecallmethod");
+
+		rbx_pushcclosure(rl, custom_funcs::loadstring); // also httpget
+		rbx_setglobal(rl, "loadstring");
+
+
+		output << console::color::pink << "Successfully registered custom funcs!\n";
+	}
 }
 
 std::uintptr_t execution_t::get_global_state() const
