@@ -1,4 +1,4 @@
-#include "communication.h"
+#include "communication/communication.h"
 
 
 std::string communication_t::read_pipe() const
