@@ -1,11 +1,11 @@
-#include "communication/communication.h"
+#include "communication.h"
 
 
 std::string communication_t::read_pipe() const
 {
 	std::string read;
 
-	HANDLE pipe = CreateNamedPipeA("\\\\.\\pipe\\headhunter", PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 10000, 10000, 0, NULL);
+	HANDLE pipe = CreateNamedPipeA("\\\\.\\pipe\\headhunter", PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 999999, 999999, NMPWAIT_USE_DEFAULT_WAIT, NULL);
 	if (pipe == INVALID_HANDLE_VALUE) {
 		return "";
 	}
@@ -15,12 +15,12 @@ std::string communication_t::read_pipe() const
 		return "";
 	}
 
-	char buffer[10000]{};
+	char buffer[999999]{};
 	DWORD bytes_read = 0;
 
-	while (ReadFile(pipe, buffer, 10000, &bytes_read, NULL)) {
+	while (ReadFile(pipe, buffer, 999999, &bytes_read, NULL)) {
 		read += buffer;
-		memset(buffer, NULL, 10000);
+		memset(buffer, NULL, 999999);
 	}
 	CloseHandle(pipe);
 
