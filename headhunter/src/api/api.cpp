@@ -150,7 +150,6 @@ void rbx_pushcclosure(std::uintptr_t rl, void* closure)
 		init = true;
 		old_val = *reinterpret_cast<std::uintptr_t*>(addresses::callcheck_addy_1);
 		*reinterpret_cast<std::uintptr_t*>(addresses::callcheck_addy_1) = reinterpret_cast<std::uintptr_t>(custom_func_proxy);
-		printf_s("0x%08X\n", custom_func_proxy);
 	}
 
 	byte patch[5]{ 0xE9 };
