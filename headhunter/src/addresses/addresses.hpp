@@ -15,31 +15,31 @@ namespace func_defs
 
 namespace addresses
 {
-	const std::uintptr_t rbx_getscheduler_addy = current_module + 0x00DE4AE0;
-	const std::uintptr_t rbx_output_addy = current_module + 0x00220530;
-	const std::uintptr_t rbx_getstate_addy = current_module + 0x003A65C0;
-	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x015EA4E0;
+	const std::uintptr_t rbx_getscheduler_addy = current_module + 0xDF1AF0;
+	const std::uintptr_t rbx_output_addy = current_module + 0x2211A0;
+	const std::uintptr_t rbx_getstate_addy = current_module + 0x3A87F0;
+	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x15F62D0;
 
-	const std::uintptr_t spawn_func_addy = current_module + 0x003BE510;
-	const std::uintptr_t deserializer_func_addy = current_module + 0x015EE590;
+	const std::uintptr_t spawn_func_addy = current_module + 0x3C0830;
+	const std::uintptr_t deserializer_func_addy = current_module + 0x15FA420;
 
-	const std::uintptr_t pushcclosure_addy = current_module + 0x0160E810;
-	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x160EB1C;
+	const std::uintptr_t pushcclosure_addy = current_module + 0x161A970;
+	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x0161AC86;
 
-	const std::uintptr_t setglobal_addy = current_module + 0x016100F0;
-	const std::uintptr_t setglobal_exit_addy = current_module + 0x161169b;
-	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x1610143;
-	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x16104f9;
+	const std::uintptr_t setglobal_addy = current_module + 0x161C260;
+	const std::uintptr_t setglobal_exit_addy = current_module + 0x0161D8A0;
+	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x0161C2B8;
+	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x0161C66A;
 
-	const std::uintptr_t index2adr_addy = current_module + 0x15EA6A0;
+	const std::uintptr_t index2adr_addy = current_module + 0x15F6490;
 
-	const std::uintptr_t fake_ret_addy = current_module + 0x0102DF1D; // reg jmp
+	const std::uintptr_t fake_ret_addy = current_module + 0x0022B7BB; // reg jmp
 
-	const std::uintptr_t callcheck_addy_1 = current_module + 0x328D110; // data ptr
-	const std::uintptr_t callcheck_addy_2 = current_module + 0x226E77; // code ptr
-	const std::uintptr_t callcheck_addy_3 = current_module + 0x165EF12; // VM callcheck
+	const std::uintptr_t callcheck_addy_1 = current_module + 0x3020DE0; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x00227CE9; // code ptr
+	const std::uintptr_t callcheck_addy_3 = current_module + 0x0166C4D5; // VM callcheck
 
-	const std::uintptr_t xor_const = current_module + 0x306B5D0;
+	const std::uintptr_t xor_const = current_module + 0x3068CC0;
 }
 
 namespace offsets
@@ -64,7 +64,7 @@ namespace offsets
 
 	namespace identity
 	{
-		constexpr std::uintptr_t extra_space = 0x68;
+		constexpr std::uintptr_t extra_space = 0x6C;
 		constexpr std::uintptr_t identity = 0x18;
 	}
 

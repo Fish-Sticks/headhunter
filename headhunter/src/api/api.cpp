@@ -92,7 +92,7 @@ void rbx_setidentity(std::uintptr_t rl, std::int8_t identity)
 
 std::uintptr_t rbx_decryptfunc(std::uintptr_t func)
 {
-	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) - (func + offsets::luafunc::func);
+	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) + (func + offsets::luafunc::func);
 }
 
 void rbx_pushnumber(std::uintptr_t rl, double num)
@@ -141,15 +141,16 @@ std::uintptr_t old_esp = 0; // must be global, it's storing stack backup
 void patching_cleanup();
 
 
-bool init = false;
 // fishy's take on pushcclosure
 void rbx_pushcclosure(std::uintptr_t rl, void* closure)
 {
+	static bool init = false;
 	if (!init)
 	{
 		init = true;
 		old_val = *reinterpret_cast<std::uintptr_t*>(addresses::callcheck_addy_1);
 		*reinterpret_cast<std::uintptr_t*>(addresses::callcheck_addy_1) = reinterpret_cast<std::uintptr_t>(custom_func_proxy);
+		printf_s("0x%08X\n", custom_func_proxy);
 	}
 
 	byte patch[5]{ 0xE9 };
@@ -228,8 +229,9 @@ void __declspec(naked) rbx_setglobal_jump()
 	{
 		mov edx, key
 		mov[esp + 0x14], edx
-		mov[esp + 0xa0], edx
-		pusha
+		mov[esp + 0xA0], edx
+		push eax
+		push ebx
 		push ecx
 		push edx
 	}
@@ -240,7 +242,8 @@ void __declspec(naked) rbx_setglobal_jump()
 	{
 		pop edx
 		pop ecx
-		popa
+		pop ebx
+		pop eax
 		push addresses::setglobal_patch_2_addy
 		ret
 	}

@@ -64,7 +64,7 @@ void execution_t::set_identity(std::int8_t identity) const
 	rbx_setidentity(this->scheduler->get_global_luastate(), identity);
 }
 
-void execution_t::register_globals() const
+void execution_t::register_globals() const // make sure they get registered on the scheduler, maintain that 100% stability rate ;)
 {
 	static bool registered = false;
 	if (!registered)

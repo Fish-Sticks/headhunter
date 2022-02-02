@@ -11,7 +11,7 @@ namespace custom_funcs
 	int setreadonly(std::uintptr_t rl)
 	{
 		std::uintptr_t table_val = *reinterpret_cast<std::uintptr_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 32);
-		*reinterpret_cast<bool*>(table_val + 7) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
+		*reinterpret_cast<bool*>(table_val + 9) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
 		return 0;
 	}
 
@@ -22,12 +22,12 @@ namespace custom_funcs
 
 		std::uintptr_t enc_mt = 0;
 
-		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0xC : 0x18);
+		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0x14 : 0xC);
 
-		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) - enc_mt)
+		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) + enc_mt)
 		{
 			*reinterpret_cast<std::uintptr_t*>(top) = mt;
-			*reinterpret_cast<std::uintptr_t*>(top + 12) = 7;
+			*reinterpret_cast<std::uintptr_t*>(top + 12) = 6;
 			top += 16;
 			return 1;
 		}
@@ -64,13 +64,13 @@ namespace custom_funcs
 	int getfuncaddy(std::uintptr_t rl) // if you know how to use this, everything else in this exploit will be hella easy to make
 	{
 		std::uintptr_t func = rbx_decryptfunc(**reinterpret_cast<std::uintptr_t**>(rl + offsets::luastate::base));
-		printf_s("0x%08X\n", func);
+		printf_s("0x%08X\n", func - reinterpret_cast<std::uintptr_t>(GetModuleHandle(NULL)));
 		return 0;
 	}
 
 	int getnamecallmethod(std::uintptr_t rl)
 	{
-		if (std::uintptr_t method = *reinterpret_cast<std::uintptr_t*>(rl + 0x64))
+		if (std::uintptr_t method = *reinterpret_cast<std::uintptr_t*>(rl + 0x68))
 		{
 			rbx_pushvfstring(rl, "%s", reinterpret_cast<const char*>(method + 0x14));
 			return 1;
