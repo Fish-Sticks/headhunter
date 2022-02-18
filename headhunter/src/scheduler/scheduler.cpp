@@ -6,7 +6,7 @@ scheduler_t::scheduler_t()
 {
 	this->taskscheduler = rbx_getscheduler();
 
-	std::uintptr_t waiting_scripts_job = this->get_job_by_name("WaitingScriptJob");
+	std::uintptr_t waiting_scripts_job = this->get_job_by_name("WaitingHybridScriptsJob");
 	this->datamodel = *reinterpret_cast<std::uintptr_t*>(waiting_scripts_job + offsets::waiting_scripts_job::datamodel);
 	this->script_context = *reinterpret_cast<std::uintptr_t*>(waiting_scripts_job + offsets::waiting_scripts_job::script_context);
 }
@@ -71,7 +71,7 @@ void scheduler_t::hook_waiting_scripts_job(void* hook, std::uintptr_t& original_
 {
 	output << console::color::green << "Hooking WaitingScriptsJob!\n";
 
-	std::uintptr_t waiting_scripts_job = this->get_job_by_name("WaitingScriptJob");
+	std::uintptr_t waiting_scripts_job = this->get_job_by_name("WaitingHybridScriptsJob");
 
 	void** vtable = new void*[6]; // make new vtable
 	memcpy(vtable, *reinterpret_cast<void**>(waiting_scripts_job), 0x18); // clone contents

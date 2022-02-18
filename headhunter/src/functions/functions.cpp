@@ -22,12 +22,12 @@ namespace custom_funcs
 
 		std::uintptr_t enc_mt = 0;
 
-		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0x14 : 0xC);
+		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 8 ? 0x14 : 0xC);
 
-		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) + enc_mt)
+		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) ^ enc_mt)
 		{
 			*reinterpret_cast<std::uintptr_t*>(top) = mt;
-			*reinterpret_cast<std::uintptr_t*>(top + 12) = 6;
+			*reinterpret_cast<std::uintptr_t*>(top + 12) = 8;
 			top += 16;
 			return 1;
 		}
@@ -70,7 +70,7 @@ namespace custom_funcs
 
 	int getnamecallmethod(std::uintptr_t rl)
 	{
-		if (std::uintptr_t method = *reinterpret_cast<std::uintptr_t*>(rl + 0x68))
+		if (std::uintptr_t method = *reinterpret_cast<std::uintptr_t*>(rl + 0x6C))
 		{
 			rbx_pushvfstring(rl, "%s", reinterpret_cast<const char*>(method + 0x14));
 			return 1;

@@ -92,7 +92,7 @@ void rbx_setidentity(std::uintptr_t rl, std::int8_t identity)
 
 std::uintptr_t rbx_decryptfunc(std::uintptr_t func)
 {
-	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) + (func + offsets::luafunc::func);
+	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) ^ (func + offsets::luafunc::func);
 }
 
 void rbx_pushnumber(std::uintptr_t rl, double num)
