@@ -36,9 +36,11 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		}
 		else
 		{
+			*reinterpret_cast<byte*>(addresses::bytecodev2_flag) = !*reinterpret_cast<byte*>(addresses::bytecodev2_flag);
 			rbx_deserialize(rl, "headhunter.exe", bytecode.c_str(), bytecode.size());
 			rbx_spawn(rl);
 			rbx_decrement_top(rl, 1);
+			*reinterpret_cast<byte*>(addresses::bytecodev2_flag) = !*reinterpret_cast<byte*>(addresses::bytecodev2_flag);
 		}
 	}
 
@@ -70,7 +72,7 @@ void execution_t::register_globals() const // make sure they get registered on t
 	if (!registered)
 	{
 		registered = true;
-
+		/*
 		std::uintptr_t rl = this->scheduler->get_global_luastate();
 
 		rbx_pushcclosure(rl, custom_funcs::setreadonly);
@@ -96,6 +98,11 @@ void execution_t::register_globals() const // make sure they get registered on t
 
 
 		output << console::color::pink << "Successfully registered custom funcs!\n";
+		*/
+
+		std::thread([]() -> void {
+			MessageBoxA(NULL, "Custom functions will not be registered, cba to update.", "headhunter", NULL);
+		}).detach();
 	}
 }
 
