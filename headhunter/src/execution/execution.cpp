@@ -32,7 +32,8 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		{
 			std::string error("[string \"headhunter.exe\"]");
 			const char* msg = bytecode.c_str() + 1;
-			rbx_output(1, (error + msg).c_str());
+			MessageBoxA(NULL, msg, "Script Error", NULL);
+			//rbx_output(1, (error + msg).c_str());
 		}
 		else
 		{
