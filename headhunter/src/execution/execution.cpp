@@ -37,11 +37,9 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		}
 		else
 		{
-			*reinterpret_cast<byte*>(addresses::bytecodev2_flag) = !*reinterpret_cast<byte*>(addresses::bytecodev2_flag);
 			rbx_deserialize(rl, "headhunter.exe", bytecode.c_str(), bytecode.size());
 			rbx_spawn(rl);
 			rbx_decrement_top(rl, 1);
-			*reinterpret_cast<byte*>(addresses::bytecodev2_flag) = !*reinterpret_cast<byte*>(addresses::bytecodev2_flag);
 		}
 	}
 

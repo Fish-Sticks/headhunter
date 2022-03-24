@@ -29,7 +29,7 @@
 // Constants: 0-2^23-1. Constants are stored in a table allocated with each proto; to allow for future bytecode tweaks the encodable value is limited to 23 bits.
 // Closures: 0-2^15-1. Closures are created from child protos via a child index; the limit is for the number of closures immediately referenced in each function.
 // Jumps: -2^23..2^23. Jump offsets are specified in word increments, so jumping over an instruction may sometimes require an offset of 2 or more.
-enum LuauOpcode 
+enum LuauOpcode
 {
     // NOP: noop
     LOP_NOP,
@@ -377,6 +377,7 @@ enum LuauBytecodeTag
 {
     // Bytecode version
     LBC_VERSION = 1,
+    LBC_VERSION_FUTURE = 2, // TODO: This will be removed in favor of LBC_VERSION with LuauBytecodeV2Force
     // Types of constant table entries
     LBC_CONSTANT_NIL = 0,
     LBC_CONSTANT_BOOLEAN,
@@ -471,6 +472,9 @@ enum LuauBuiltinFunction
     // bit32.count
     LBF_BIT32_COUNTLZ,
     LBF_BIT32_COUNTRZ,
+
+    // select(_, ...)
+    LBF_SELECT_VARARG,
 };
 
 // Capture type, used in LOP_CAPTURE

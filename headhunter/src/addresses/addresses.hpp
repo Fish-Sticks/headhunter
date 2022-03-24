@@ -15,13 +15,13 @@ namespace func_defs
 
 namespace addresses
 {
-	const std::uintptr_t rbx_getscheduler_addy = current_module + 0x00DBA560;
+	const std::uintptr_t rbx_getscheduler_addy = current_module + 0x00DC91E0;
 	const std::uintptr_t rbx_output_addy = current_module + 0;
-	const std::uintptr_t rbx_getstate_addy = current_module + 0x003AF9C0;
+	const std::uintptr_t rbx_getstate_addy = current_module + 0x003B14C0;
 	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0; // LIMITED TO 512 CHARACTERS
 
-	const std::uintptr_t spawn_func_addy = current_module + 0x003C7D50;
-	const std::uintptr_t deserializer_func_addy = current_module + 0x012C0290;
+	const std::uintptr_t spawn_func_addy = current_module + 0x003CA9D0;
+	const std::uintptr_t deserializer_func_addy = current_module + 0x012CFEA0;
 
 	const std::uintptr_t pushcclosure_addy = current_module + 0;
 	const std::uintptr_t pushcclosure_exit_addy = current_module + 0;
@@ -35,13 +35,11 @@ namespace addresses
 
 	const std::uintptr_t fake_ret_addy = current_module + 0x00026C86; // reg jmp
 
-	const std::uintptr_t callcheck_addy_1 = current_module + 0x0774C703; // data ptr
-	const std::uintptr_t callcheck_addy_2 = current_module + 0x000C7199; // code ptr
+	const std::uintptr_t callcheck_addy_1 = current_module + 0xC3030149; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x001335AD; // code ptr
 	const std::uintptr_t callcheck_addy_3 = current_module + 0; // VM callcheck
 
 	const std::uintptr_t xor_const = current_module + 0;
-
-	const std::uintptr_t bytecodev2_flag = current_module + 0x29CBB84; // fuck updating my luau lib
 }
 
 namespace offsets
@@ -72,8 +70,8 @@ namespace offsets
 
 	namespace luastate
 	{
-		constexpr std::uintptr_t top = 0x0C;
-		constexpr std::uintptr_t base = 0x18;
+		constexpr std::uintptr_t top = 0x14;
+		constexpr std::uintptr_t base = 0x08;
 	}
 
 	namespace luafunc
