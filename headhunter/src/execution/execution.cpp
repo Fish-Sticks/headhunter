@@ -88,7 +88,7 @@ void execution_t::register_globals() const // make sure they get registered on t
 		rbx_pushcclosure(rl, custom_funcs::getnamecallmethod);
 		rbx_setglobal(rl, "getnamecallmethod");
 
-		rbx_pushcclosure(rl, custom_funcs::loadstring); // also httpget
+		rbx_pushcclosure(rl, custom_funcs::loadstring);
 		rbx_setglobal(rl, "loadstring");
 
 		rbx_pushcclosure(rl, custom_funcs::setidentity);
