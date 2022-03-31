@@ -11,7 +11,7 @@ namespace custom_funcs
 	int setreadonly(std::uintptr_t rl)
 	{
 		std::uintptr_t table_val = *reinterpret_cast<std::uintptr_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 32);
-		*reinterpret_cast<bool*>(table_val + 9) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
+		*reinterpret_cast<bool*>(table_val + 3) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
 		return 0;
 	}
 
@@ -22,12 +22,12 @@ namespace custom_funcs
 
 		std::uintptr_t enc_mt = 0;
 
-		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 8 ? 0x14 : 0xC);
+		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0x10 : 8);
 
-		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) ^ enc_mt)
+		if (std::uintptr_t mt = enc_mt - *reinterpret_cast<std::uintptr_t*>(enc_mt))
 		{
 			*reinterpret_cast<std::uintptr_t*>(top) = mt;
-			*reinterpret_cast<std::uintptr_t*>(top + 12) = 8;
+			*reinterpret_cast<std::uintptr_t*>(top + 12) = 6;
 			top += 16;
 			return 1;
 		}
@@ -70,7 +70,7 @@ namespace custom_funcs
 
 	int getnamecallmethod(std::uintptr_t rl)
 	{
-		if (std::uintptr_t method = *reinterpret_cast<std::uintptr_t*>(rl + 0x6C))
+		if (std::uintptr_t method = *reinterpret_cast<std::uintptr_t*>(rl + 0x44))
 		{
 			rbx_pushvfstring(rl, "%s", reinterpret_cast<const char*>(method + 0x14));
 			return 1;

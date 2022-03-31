@@ -13,6 +13,7 @@ extern void rbx_pushcclosure(std::uintptr_t rl, void* closure);
 extern void rbx_setglobal(std::uintptr_t rl, const char* globalname);
 extern std::uintptr_t rbx_decryptfunc(std::uintptr_t func);
 extern void rbx_pushnumber(std::uintptr_t rl, double num);
+extern std::uint32_t rbx_gettop(std::uintptr_t rl);
 
 extern func_defs::rbx_getscheduler_t rbx_getscheduler;
 extern func_defs::rbx_getstate_t rbx_getstate;

@@ -32,8 +32,8 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		{
 			std::string error("[string \"headhunter.exe\"]");
 			const char* msg = bytecode.c_str() + 1;
-			MessageBoxA(NULL, msg, "Script Error", NULL);
-			//rbx_output(1, (error + msg).c_str());
+			//MessageBoxA(NULL, msg, "Script Error", NULL);
+			rbx_output(1, (error + msg).c_str());
 		}
 		else
 		{
@@ -71,7 +71,6 @@ void execution_t::register_globals() const // make sure they get registered on t
 	if (!registered)
 	{
 		registered = true;
-		/*
 		std::uintptr_t rl = this->scheduler->get_global_luastate();
 
 		rbx_pushcclosure(rl, custom_funcs::setreadonly);
@@ -83,9 +82,6 @@ void execution_t::register_globals() const // make sure they get registered on t
 		rbx_pushcclosure(rl, custom_funcs::setfpscap);
 		rbx_setglobal(rl, "setfpscap");
 
-		rbx_pushcclosure(rl, custom_funcs::setidentity);
-		rbx_setglobal(rl, "setidentity");
-
 		rbx_pushcclosure(rl, custom_funcs::getfuncaddy);
 		rbx_setglobal(rl, "getfuncaddy");
 
@@ -95,13 +91,16 @@ void execution_t::register_globals() const // make sure they get registered on t
 		rbx_pushcclosure(rl, custom_funcs::loadstring); // also httpget
 		rbx_setglobal(rl, "loadstring");
 
+		rbx_pushcclosure(rl, custom_funcs::setidentity);
+		rbx_setglobal(rl, "setidentity");
 
 		output << console::color::pink << "Successfully registered custom funcs!\n";
-		*/
 
-		std::thread([]() -> void {
-			MessageBoxA(NULL, "Custom functions will not be registered, cba to update.", "headhunter", NULL);
-		}).detach();
+		/*
+			std::thread([]() -> void {
+				MessageBoxA(NULL, "Custom functions will not be registered, cba to update.", "headhunter", NULL);
+			}).detach();
+		*/
 	}
 }
 

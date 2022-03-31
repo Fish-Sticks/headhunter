@@ -16,30 +16,30 @@ namespace func_defs
 namespace addresses
 {
 	const std::uintptr_t rbx_getscheduler_addy = current_module + 0x00DCD950;
-	const std::uintptr_t rbx_output_addy = current_module + 0;
+	const std::uintptr_t rbx_output_addy = current_module + 0x225460;
 	const std::uintptr_t rbx_getstate_addy = current_module + 0x003B4030;
-	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0; // LIMITED TO 512 CHARACTERS
+	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x012D4640; // LIMITED TO 512 CHARACTERS
 
 	const std::uintptr_t spawn_func_addy = current_module + 0x003CD0D0;
 	const std::uintptr_t deserializer_func_addy = current_module + 0x012D8700;
 
 	const std::uintptr_t pushcclosure_addy = current_module + 0x012F7D90;
-	const std::uintptr_t pushcclosure_exit_addy = current_module + 0;
+	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x012F800E;
 
-	const std::uintptr_t setglobal_addy = current_module + 0;
-	const std::uintptr_t setglobal_exit_addy = current_module + 0;
-	const std::uintptr_t setglobal_patch_1_addy = current_module + 0;
-	const std::uintptr_t setglobal_patch_2_addy = current_module + 0;
+	const std::uintptr_t setglobal_addy = current_module + 0x12F9660;
+	const std::uintptr_t setglobal_exit_addy = current_module + 0x012FACA4;
+	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x012F96B3;
+	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x012F9A1C;
 
-	const std::uintptr_t index2adr_addy = current_module + 0;
+	const std::uintptr_t index2adr_addy = current_module + 0x12D4800;
 
 	const std::uintptr_t fake_ret_addy = current_module + 0x00026C86; // reg jmp
 
-	const std::uintptr_t callcheck_addy_1 = current_module + 0xC34C0155; // data ptr
-	const std::uintptr_t callcheck_addy_2 = current_module + 0x0007A10D; // code ptr
-	const std::uintptr_t callcheck_addy_3 = current_module + 0; // VM callcheck
+	const std::uintptr_t callcheck_addy_1 = current_module + 0x2E37F2C; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x0022BB47; // code ptr
+	const std::uintptr_t callcheck_addy_3 = current_module + 0x01348DFB; // VM callcheck
 
-	const std::uintptr_t xor_const = current_module + 0;
+	const std::uintptr_t xor_const = current_module + 0x2C14E90;
 }
 
 namespace offsets
@@ -76,6 +76,6 @@ namespace offsets
 
 	namespace luafunc
 	{
-		constexpr std::uintptr_t func = 0;
+		constexpr std::uintptr_t func = 16;
 	}
 }

@@ -90,9 +90,14 @@ void rbx_setidentity(std::uintptr_t rl, std::int8_t identity)
 	*reinterpret_cast<std::int8_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::identity::extra_space) + offsets::identity::identity) = identity;
 }
 
+std::uint32_t rbx_gettop(std::uintptr_t rl)
+{
+	return *reinterpret_cast<std::uint32_t*>(rl + offsets::luastate::top) - *reinterpret_cast<std::uint32_t*>(rl + offsets::luastate::base) >> 4;
+}
+
 std::uintptr_t rbx_decryptfunc(std::uintptr_t func)
 {
-	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) ^ (func + offsets::luafunc::func);
+	return (func + offsets::luafunc::func) - *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func);
 }
 
 void rbx_pushnumber(std::uintptr_t rl, double num)
@@ -158,22 +163,22 @@ void rbx_pushcclosure(std::uintptr_t rl, void* closure)
 
 	func.write(patch, 5); // patch code
 
-	const char* dummystring = ""; // dont want this to be nullptr, i think it gets read from idk, just keep it initialized
+	const char* debug_name = ""; // debug name for cclosure, put one if u want
 
 	__asm {
-		pusha // push all general registers (to preserve them)
+		pushad // push all general registers (to preserve them)
 		push after // push memory address of after, this will be used later for cleanup, for now just remember right under old esp is after
 		mov old_esp, esp // save a clone of esp, we're exiting mid function so it's gonna be in some random position, we need to preserve old pos
 
 		mov edi, after
 		mov ecx, rl // this is a normal __fastcall standard, first arg in ecx, second arg in edx, rest are on stack pushed right to left
-		mov edx, dummystring
+		mov edx, debug_name
 		push closure
 		push addresses::callcheck_addy_2
 		push addresses::fake_ret_addy
 		jmp addresses::pushcclosure_addy // preform a normal call, it'll run through the func and jump to cleanup
 	after: // we jump back here
-		popa // restore all the preserved register values
+		popad // restore all the preserved register values
 	}
 
 	func.revert(); // remove patch on function, no longer needed so lets not get hit by memcheck
@@ -229,20 +234,14 @@ void __declspec(naked) rbx_setglobal_jump()
 		mov edx, key
 		mov[esp + 0x14], edx
 		mov[esp + 0xA0], edx
-		push eax
-		push ebx
-		push ecx
-		push edx
+		pushad
 	}
 
 	patch_2.revert(); // this func peepoo breaks all my registers, thats why so many push lmao
 
 	__asm
 	{
-		pop edx
-		pop ecx
-		pop ebx
-		pop eax
+		popad
 		push addresses::setglobal_patch_2_addy
 		ret
 	}
