@@ -254,3 +254,66 @@ void __declspec(naked) patching_cleanup() // callback for hooked shit
 		ret // return in asm just means jump to the address thats on the top of the stack, that being the one we pushed (push after)
 	} // this will go to the after label
 }
+
+unsigned int luaS_hash(const char* str, size_t len)
+{
+	unsigned int a = 0, b = 0;
+	unsigned int h = unsigned(len);
+	while (len >= 32)
+	{
+#define rol(x, s) ((x >> s) | (x << (32 - s)))
+#define mix(u, v, w) a ^= h, a -= rol(h, u), b ^= a, b -= rol(a, v), h ^= b, h -= rol(b, w)
+		uint32_t block[3];
+		memcpy(block, str, 12);
+		a += block[0];
+		b += block[1];
+		h += block[2];
+		mix(14, 11, 25);
+		str += 12;
+		len -= 12;
+#undef mix
+#undef rol
+	}
+	for (size_t i = len; i > 0; --i)
+		h ^= (h << 5) + (h >> 2) + (uint8_t)str[i - 1];
+	return h;
+}
+
+void rbx_pushstring(std::uintptr_t rl, const std::string& str)
+{
+	size_t length = str.size() + 21;
+	std::uintptr_t global = rl + 24 - *reinterpret_cast<std::uintptr_t*>(rl + 24);
+	const auto frealloc = *reinterpret_cast<std::uintptr_t(__cdecl**)(std::uintptr_t, std::uintptr_t, std::uintptr_t, size_t)>(global + 12);
+
+	std::uintptr_t tstring = frealloc(*reinterpret_cast<std::uintptr_t*>(global + 16), 0, 0, length);
+	unsigned int hash = luaS_hash(str.c_str(), str.size());
+
+	*reinterpret_cast<size_t*>(global + 40) += length;
+	*reinterpret_cast<size_t*>(global + 324 + 4 * *reinterpret_cast<byte*>(rl + 4)) += length;
+
+	*reinterpret_cast<byte*>(tstring) = *reinterpret_cast<byte*>(rl + 4);
+	*reinterpret_cast<byte*>(tstring + 1) = 5;
+	*reinterpret_cast<byte*>(tstring + 2) = *reinterpret_cast<byte*>(global + 20) & 3;
+
+	*reinterpret_cast<std::uint32_t*>(tstring + 12) = hash - (tstring + 12); // hash
+	*reinterpret_cast<std::size_t*>(tstring + 16) = tstring + 16 - str.size(); // strlen
+
+	memcpy(reinterpret_cast<void*>(tstring + 20), str.c_str(), str.size()); // string itself
+	*reinterpret_cast<char*>(tstring + str.size() + 20) = '/0'; // null terminate string
+
+	const auto meme = *reinterpret_cast<std::uint16_t(__cdecl**)(std::uintptr_t, std::uintptr_t)>(global + 2144);
+	std::uint16_t res = -1;
+	if (meme)
+		res = meme(tstring + 20, str.size()); // atom
+
+	std::uint32_t speedrun = 4 * (hash & (*reinterpret_cast<std::uint32_t*>(global) - 1)); // put shit together like legos, cba to read lua docs so just this is made from memory lol
+	*reinterpret_cast<std::uint16_t*>(tstring + 4) = res;
+	*reinterpret_cast<std::uint32_t*>(tstring + 8) = *reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 4));
+	*reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 4)) = tstring;
+	++* reinterpret_cast<std::uint32_t*>(global + 8);
+
+	std::uintptr_t* top = reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top); // push
+	*reinterpret_cast<std::uint32_t*>(*top) = tstring;
+	*reinterpret_cast<std::uint32_t*>(*top + 12) = 5;
+	*top += 16;
+}

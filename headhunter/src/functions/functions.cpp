@@ -5,6 +5,40 @@
 #include "execution/execution.h"
 
 #include <intrin.h>
+#include <Wininet.h>
+
+std::string Replace(std::string subject, const std::string& search,
+	const std::string& replace) {
+	size_t pos = 0;
+	while ((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+	return subject;
+}
+
+std::string DownloadString(std::string URL) {
+
+	HINTERNET interwebs = InternetOpen("Mozilla/5.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
+	HINTERNET urlFile;
+	std::string rtn;
+	if (interwebs) {
+		urlFile = InternetOpenUrl(interwebs, URL.c_str(), NULL, NULL, NULL, NULL);
+		if (urlFile) {
+			char buffer[2000];
+			DWORD bytesRead;
+			do {
+				InternetReadFile(urlFile, buffer, 2000, &bytesRead);
+				rtn.append(buffer, bytesRead);
+				memset(buffer, 0, 2000);
+			} while (bytesRead);
+			InternetCloseHandle(interwebs);
+			InternetCloseHandle(urlFile);
+			std::string p = Replace(rtn, "|n", "\r\n");
+			return p;
+		}
+	}
+}
 
 namespace custom_funcs
 {
@@ -76,5 +110,12 @@ namespace custom_funcs
 			return 1;
 		}
 		return 0;
+	}
+
+	int httpget(std::uintptr_t rl)
+	{
+		const char* URL = **reinterpret_cast<const char***>(rl + offsets::luastate::base) + 20;
+		rbx_pushstring(rl, DownloadString(URL));
+		return 1;
 	}
 }

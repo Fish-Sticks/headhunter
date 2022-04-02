@@ -15,3 +15,4 @@ getnamecallmethod
 setreadonly
 setfpscap
 loadstring
+game:HttpGet & HttpGet

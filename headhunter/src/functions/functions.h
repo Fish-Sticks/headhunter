@@ -10,4 +10,5 @@ namespace custom_funcs
 	extern int loadstring(std::uintptr_t rl);
 	extern int getfuncaddy(std::uintptr_t rl);
 	extern int getnamecallmethod(std::uintptr_t rl);
+	extern int httpget(std::uintptr_t rl);
 }

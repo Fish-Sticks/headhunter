@@ -37,6 +37,27 @@ void mainfunc()
     }
 */
 
+    // makes the metatable hook
+    std::string init_script = R"--(
+        local mt = getrawmetatable(game)
+        local orig = mt.__namecall
+
+        setreadonly(mt, false)
+
+        mt.__namecall = function(self, ...)
+            if getnamecallmethod() == "HttpGet" then
+                return HttpGet(...)
+            end
+
+            return orig(self, ...)
+        end
+
+        setreadonly(mt, true)
+        warn("Headhunter initialization script finished!")
+    )--";
+
+    execution.run_script(init_script);
+
     while (true)
     {
         execution.run_script(communication.read_pipe());

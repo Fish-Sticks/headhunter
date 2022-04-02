@@ -94,6 +94,9 @@ void execution_t::register_globals() const // make sure they get registered on t
 		rbx_pushcclosure(rl, custom_funcs::setidentity);
 		rbx_setglobal(rl, "setidentity");
 
+		rbx_pushcclosure(rl, custom_funcs::httpget);
+		rbx_setglobal(rl, "HttpGet");
+
 		output << console::color::pink << "Successfully registered custom funcs!\n";
 
 		/*
