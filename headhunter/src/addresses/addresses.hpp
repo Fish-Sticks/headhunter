@@ -69,7 +69,7 @@ namespace offsets
 	}
 
 	namespace luastate // fishy stop putting these in hex it looks weird - final
-	{
+	{ // kys everything will be hex besides luafunc because that has corona
 		constexpr std::uintptr_t top = 24;
 		constexpr std::uintptr_t base = 20;
 	}
