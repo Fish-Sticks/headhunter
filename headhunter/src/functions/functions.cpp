@@ -81,7 +81,8 @@ namespace custom_funcs
 
 	int setidentity(std::uintptr_t rl) // DIY
 	{
-		output << console::color::red << "this ones for you to make!\n";
+		const auto val = r_lua_tonumber(rl, -1);
+                rbx_setidentity(rl, val);
 		return 0;
 	}
 
