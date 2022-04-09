@@ -6,7 +6,7 @@ scheduler_t::scheduler_t()
 {
 	this->taskscheduler = rbx_getscheduler();
 
-	std::uintptr_t waiting_scripts_job = this->get_job_by_name("WaitingHybridScriptsJob");
+	std::uintptr_t waiting_scripts_job = this->get_waiting_scripts_job();
 	this->datamodel = *reinterpret_cast<std::uintptr_t*>(waiting_scripts_job + offsets::waiting_scripts_job::datamodel);
 	this->script_context = *reinterpret_cast<std::uintptr_t*>(waiting_scripts_job + offsets::waiting_scripts_job::script_context);
 }
@@ -43,16 +43,22 @@ void scheduler_t::print_jobs() const
 	MessageBoxA(NULL, "Thank you for using headhunter, created by fishy!", "Thanks!", NULL);
 }
 
-std::uintptr_t scheduler_t::get_job_by_name(const std::string& name) const
+std::uintptr_t scheduler_t::get_waiting_scripts_job() const
 {
+	bool passed = false;
 	for (std::uintptr_t& job : this->get_jobs())
 	{
-		if (std::string* job_name = reinterpret_cast<std::string*>(job + offsets::job::name); name == *job_name)
+		if (std::string* job_name = reinterpret_cast<std::string*>(job + offsets::job::name); *job_name == "WaitingHybridScriptsJob")
 		{
-			return job;
+			std::printf("potential: 0x%08X\n", *reinterpret_cast<std::uintptr_t*>(job + offsets::waiting_scripts_job::datamodel));
+			if (passed)
+				return job;
+			else
+				passed = true;
 		}
 	}
-	return NULL;
+
+	return 0;
 }
 
 std::vector<std::uintptr_t> scheduler_t::get_jobs() const
@@ -71,9 +77,9 @@ void scheduler_t::hook_waiting_scripts_job(void* hook, std::uintptr_t& original_
 {
 	output << console::color::green << "Hooking WaitingScriptsJob!\n";
 
-	std::uintptr_t waiting_scripts_job = this->get_job_by_name("WaitingHybridScriptsJob");
+	std::uintptr_t waiting_scripts_job = this->get_waiting_scripts_job();
 
-	void** vtable = new void*[6]; // make new vtable
+	void** vtable = new void* [6]; // make new vtable
 	memcpy(vtable, *reinterpret_cast<void**>(waiting_scripts_job), 0x18); // clone contents
 	original_func = reinterpret_cast<std::uintptr_t>(vtable[2]); // grab func needed
 
