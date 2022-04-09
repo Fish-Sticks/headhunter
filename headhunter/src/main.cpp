@@ -45,7 +45,7 @@ void mainfunc()
         setreadonly(mt, false)
 
         mt.__namecall = function(self, ...)
-            if getnamecallmethod() == "HttpGet" then
+            if getnamecallmethod() == "HttpGet" and rawequal(self, game) then
                 return HttpGet(...)
             end
 
