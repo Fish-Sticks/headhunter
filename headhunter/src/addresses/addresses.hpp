@@ -23,23 +23,23 @@ namespace addresses
 	const std::uintptr_t spawn_func_addy = current_module + 0x3E8480;
 	const std::uintptr_t deserializer_func_addy = current_module + 0x131CB70;
 
-	const std::uintptr_t pushcclosure_addy = current_module + 0x0;
-	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x0;
+	const std::uintptr_t pushcclosure_addy = current_module + 0x01341000;
+	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x0134127F;
 
-	const std::uintptr_t setglobal_addy = current_module + 0x0;
-	const std::uintptr_t setglobal_exit_addy = current_module + 0x0;
-	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x0;
-	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x0;
+	const std::uintptr_t setglobal_addy = current_module + 0x1343290;
+	const std::uintptr_t setglobal_exit_addy = current_module + 0x013453C8;
+	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x013432E8;
+	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x01343651;
 
 	const std::uintptr_t index2adr_addy = current_module + 0x1318BD0;
 
 	const std::uintptr_t fake_ret_addy = current_module + 0x002EF994; // reg jmp
 
-	const std::uintptr_t callcheck_addy_1 = current_module + 0x9; // data ptr
-	const std::uintptr_t callcheck_addy_2 = current_module + 0x0; // code ptr
-	const std::uintptr_t callcheck_addy_3 = current_module + 0x0; // VM callcheck
+	const std::uintptr_t callcheck_addy_1 = current_module + 0x2EAADEC; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x0022DF07; // code ptr
+	const std::uintptr_t callcheck_addy_3 = current_module + 0x013A68C4; // VM callcheck
 
-	const std::uintptr_t xor_const = current_module + 0x0;
+	const std::uintptr_t xor_const = current_module + 0x2C87C80;
 }
 
 namespace offsets
@@ -68,8 +68,8 @@ namespace offsets
 		constexpr std::uintptr_t identity = 0x18;
 	}
 
-	namespace luastate // fishy stop putting these in hex it looks weird - final
-	{ // kys everything will be hex besides luafunc because that has corona
+	namespace luastate
+	{
 		constexpr std::uintptr_t top = 24;
 		constexpr std::uintptr_t base = 20;
 	}

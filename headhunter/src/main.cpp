@@ -18,8 +18,17 @@ void mainfunc()
     output << console::color::cyan << "Welcome to headhunter! A simple exploit made by fishy.\n";
     output << console::color::white << "Current scheduler: 0x" << scheduler.get() << "\n";
 
-    scheduler.print_jobs();
+    std::uintptr_t a = 0;
+    __asm
+    {
+        mov eax, execution_t::register_globals
+        mov a, eax
+    }
 
+    std::printf("%p\n", a);
+
+    scheduler.print_jobs();
+        
     output << console::color::pink << "Got Datamodel: 0x" << scheduler.get_datamodel() << "\n";
     output << console::color::pink << "Got ScriptContext: 0x" << scheduler.get_script_context() << "\n";
     output << console::color::pink << "Got luastate: 0x" << scheduler.get_global_luastate() << "\n";

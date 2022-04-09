@@ -45,7 +45,7 @@ namespace custom_funcs
 	int setreadonly(std::uintptr_t rl)
 	{
 		std::uintptr_t table_val = *reinterpret_cast<std::uintptr_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 32);
-		*reinterpret_cast<bool*>(table_val + 3) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
+		*reinterpret_cast<bool*>(table_val + 7) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
 		return 0;
 	}
 
@@ -58,7 +58,7 @@ namespace custom_funcs
 
 		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0x10 : 8);
 
-		if (std::uintptr_t mt = enc_mt - *reinterpret_cast<std::uintptr_t*>(enc_mt))
+		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) - enc_mt)
 		{
 			*reinterpret_cast<std::uintptr_t*>(top) = mt;
 			*reinterpret_cast<std::uintptr_t*>(top + 12) = 6;
@@ -114,7 +114,7 @@ namespace custom_funcs
 
 	int httpget(std::uintptr_t rl)
 	{
-		const char* URL = **reinterpret_cast<const char***>(rl + offsets::luastate::base) + 20;
+		const char* URL = **reinterpret_cast<const char***>(rl + offsets::luastate::base) + 0x14;
 		rbx_pushstring(rl, DownloadString(URL));
 		return 1;
 	}
