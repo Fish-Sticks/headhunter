@@ -114,11 +114,11 @@ void rbx_pushnumber(std::uintptr_t rl, double num)
 
 std::double_t rbx_tonumber(std::uintptr_t rl, std::int32_t idx)
 {
-    auto top = rbx_index2adr(rL, idx);
+    auto top = rbx_index2adr(rl, idx);
 
-    const auto value = *reinterpret_cast<const std::double_t*>(&(reinterpret_cast<r_TValue*>(top)->value));
+    const auto value = *reinterpret_cast<const std::double_t*>(&(*reinterpret_cast<std::uintptr_t*>(top)));
 
-    __m128d xmm_key = _mm_load_pd(reinterpret_cast<const std::double_t*>(xorconst_address));
+    __m128d xmm_key = _mm_load_pd(reinterpret_cast<const std::double_t*>(addresses::xor_const));
     __m128d xmm_data = _mm_load_sd(&(value));
     __m128d xmm_result = _mm_xor_pd(xmm_key, xmm_data);
     const auto result =  _mm_cvtsd_f64(xmm_result);
