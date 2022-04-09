@@ -87,10 +87,15 @@ namespace custom_funcs
 
 	int loadstring(std::uintptr_t rl)
 	{
-		const char* script = **reinterpret_cast<const char***>(rl + offsets::luastate::base) + 0x14;
+		std::string loaded_string;
+
+		std::uintptr_t string = **reinterpret_cast<std::uintptr_t**>(rl + offsets::luastate::base);
+		std::printf("string size: %d\n", *reinterpret_cast<std::size_t*>(string + 16) - (string + 16));
+
+		loaded_string.append(reinterpret_cast<const char*>(string + 0x14), *reinterpret_cast<std::size_t*>(string + 16) - (string + 16));
 
 		roblox_encoder_t roblox_encoder{};
-		const std::string compiled = Luau::compile(script, {}, {}, &roblox_encoder);
+		const std::string compiled = Luau::compile(loaded_string, {}, {}, &roblox_encoder);
 		rbx_deserialize(rl, "headhunter.exe", compiled.c_str(), compiled.size());
 		return 1;
 	}
