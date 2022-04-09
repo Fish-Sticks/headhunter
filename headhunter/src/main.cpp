@@ -18,15 +18,6 @@ void mainfunc()
     output << console::color::cyan << "Welcome to headhunter! A simple exploit made by fishy.\n";
     output << console::color::white << "Current scheduler: 0x" << scheduler.get() << "\n";
 
-    std::uintptr_t a = 0;
-    __asm
-    {
-        mov eax, execution_t::register_globals
-        mov a, eax
-    }
-
-    std::printf("%p\n", a);
-
     scheduler.print_jobs();
         
     output << console::color::pink << "Got Datamodel: 0x" << scheduler.get_datamodel() << "\n";

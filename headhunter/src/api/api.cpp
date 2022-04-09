@@ -97,7 +97,7 @@ std::uint32_t rbx_gettop(std::uintptr_t rl)
 
 std::uintptr_t rbx_decryptfunc(std::uintptr_t func)
 {
-	return (func + offsets::luafunc::func) + *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func);
+	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) - (func + offsets::luafunc::func);
 }
 
 void rbx_pushnumber(std::uintptr_t rl, double num)
@@ -232,16 +232,16 @@ void __declspec(naked) rbx_setglobal_jump()
 	__asm
 	{
 		mov edx, key
-		mov[esp + 0x14], edx
+		mov[esp + 0x18], edx
 		mov[esp + 0xA0], edx
-		pushad
+		pusha
 	}
 
 	patch_2.revert(); // this func peepoo breaks all my registers, thats why so many push lmao
 
 	__asm
 	{
-		popad
+		popa
 		push addresses::setglobal_patch_2_addy
 		ret
 	}
@@ -282,17 +282,18 @@ unsigned int luaS_hash(const char* str, size_t len)
 void rbx_pushstring(std::uintptr_t rl, const std::string& str)
 {
 	size_t length = str.size() + 21;
-	std::uintptr_t global = rl + 8 + *reinterpret_cast<std::uintptr_t*>(rl + 8);
+	std::uintptr_t global = *reinterpret_cast<std::uintptr_t*>(rl + 8) - (rl + 8);
 	const auto frealloc = *reinterpret_cast<std::uintptr_t(__cdecl**)(std::uintptr_t, std::uintptr_t, std::uintptr_t, size_t)>(global + 12);
 
 	std::uintptr_t tstring = frealloc(*reinterpret_cast<std::uintptr_t*>(global + 16), 0, 0, length);
+
 	unsigned int hash = luaS_hash(str.c_str(), str.size());
 
 	*reinterpret_cast<size_t*>(global + 56) += length;
 	*reinterpret_cast<size_t*>(global + 324 + 4 * *reinterpret_cast<byte*>(rl + 4)) += length;
 
-	*reinterpret_cast<byte*>(tstring + 1) = *reinterpret_cast<byte*>(rl + 4);
 	*reinterpret_cast<byte*>(tstring) = 5;
+	*reinterpret_cast<byte*>(tstring + 1) = *reinterpret_cast<byte*>(rl + 4);
 	*reinterpret_cast<byte*>(tstring + 2) = *reinterpret_cast<byte*>(global + 20) & 3;
 
 	*reinterpret_cast<std::uint32_t*>(tstring + 12) = (tstring + 12) - hash; // hash
@@ -310,7 +311,7 @@ void rbx_pushstring(std::uintptr_t rl, const std::string& str)
 	*reinterpret_cast<std::uint16_t*>(tstring + 4) = res;
 	*reinterpret_cast<std::uint32_t*>(tstring + 8) = *reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global));
 	*reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global)) = tstring;
-	++* reinterpret_cast<std::uint32_t*>(global + 8);
+	++*reinterpret_cast<std::uint32_t*>(global + 8);
 
 	std::uintptr_t* top = reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top); // push
 	*reinterpret_cast<std::uint32_t*>(*top) = tstring;
