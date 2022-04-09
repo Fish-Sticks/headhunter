@@ -112,6 +112,23 @@ void rbx_pushnumber(std::uintptr_t rl, double num)
 	*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) += 16;
 }
 
+std::double_t rbx_tonumber(std::uintptr_t rl, std::int32_t idx)
+{
+    auto top = rbx_index2adr(rL, idx);
+
+    const auto value = *reinterpret_cast<const std::double_t*>(&(reinterpret_cast<r_TValue*>(top)->value));
+
+    __m128d xmm_key = _mm_load_pd(reinterpret_cast<const std::double_t*>(xorconst_address));
+    __m128d xmm_data = _mm_load_sd(&(value));
+    __m128d xmm_result = _mm_xor_pd(xmm_key, xmm_data);
+    const auto result =  _mm_cvtsd_f64(xmm_result);
+
+    if (result == 0)
+        throw std::exception("value is nil");
+
+    return result;
+}
+
 int custom_func_handler(std::uintptr_t rl) // acts as a proxy
 {
 	std::uintptr_t func = *rbx_index2adr(rl, -10003); // get upval
