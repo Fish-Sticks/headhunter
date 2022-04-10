@@ -45,20 +45,17 @@ void scheduler_t::print_jobs() const
 
 std::uintptr_t scheduler_t::get_waiting_scripts_job() const
 {
-	bool passed = false;
+	std::uintptr_t last_job; // sometimes 2 jobs, sometimes 1, idfk what determines but the last job is ((USUALLY)) the right one? idk i cba to rev man
 	for (std::uintptr_t& job : this->get_jobs())
 	{
 		if (std::string* job_name = reinterpret_cast<std::string*>(job + offsets::job::name); *job_name == "WaitingHybridScriptsJob")
 		{
 			std::printf("potential: 0x%08X\n", *reinterpret_cast<std::uintptr_t*>(job + offsets::waiting_scripts_job::datamodel));
-			if (passed)
-				return job;
-			else
-				passed = true;
+			last_job = job;
 		}
 	}
 
-	return 0;
+	return last_job;
 }
 
 std::vector<std::uintptr_t> scheduler_t::get_jobs() const
