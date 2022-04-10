@@ -11,4 +11,5 @@ namespace custom_funcs
 	extern int getfuncaddy(std::uintptr_t rl);
 	extern int getnamecallmethod(std::uintptr_t rl);
 	extern int httpget(std::uintptr_t rl);
+	extern int setclipboard(std::uintptr_t rl);
 }
