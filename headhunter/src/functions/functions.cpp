@@ -123,4 +123,21 @@ namespace custom_funcs
 		rbx_pushstring(rl, DownloadString(URL));
 		return 1;
 	}
+	
+	int setclipboard(std::uintptr_t rl)
+	{
+		const char* string = **reinterpret_cast<const char***>(rl + offsets::luastate::base) + 0x14;
+		const size_t len = strlen(string) + 1;
+
+		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+
+		memcpy(GlobalLock(hMem), string, len);
+		GlobalUnlock(hMem);
+		OpenClipboard(0);
+		EmptyClipboard();
+		SetClipboardData(CF_TEXT, hMem);
+		CloseClipboard();
+
+		return 1;
+	}
 }
