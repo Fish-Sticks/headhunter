@@ -96,6 +96,9 @@ void execution_t::register_globals() const // make sure they get registered on t
 
 		rbx_pushcclosure(rl, custom_funcs::httpget);
 		rbx_setglobal(rl, "HttpGet");
+		
+		rbx_pushcclosure(rl, custom_funcs::setclipboard);
+		rbx_setglobal(rl, "setclipboard");
 
 		output << console::color::pink << "Successfully registered custom funcs!\n";
 
