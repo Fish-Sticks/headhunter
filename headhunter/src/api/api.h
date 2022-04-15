@@ -22,4 +22,4 @@ extern func_defs::rbx_getscheduler_t rbx_getscheduler;
 extern func_defs::rbx_getstate_t rbx_getstate;
 extern func_defs::rbx_output_t rbx_output;
 extern func_defs::rbx_pushvfstring_t rbx_pushvfstring;
-extern func_defs::rbx_index2adr_t rbx_index2adr;
+extern func_defs::rbx_psuedo2adr_t rbx_psuedo2adr;

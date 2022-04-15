@@ -60,6 +60,12 @@ void execution_t::run_script(const std::string& script) const
 	script_queue.push(compiled);
 }
 
+void execution_t::run_bytecode(const std::string& bytecode) const
+{
+	std::unique_lock<std::mutex> guard{ mutex };
+	script_queue.push(bytecode);
+}
+
 void execution_t::set_identity(std::int8_t identity) const
 {
 	rbx_setidentity(this->scheduler->get_global_luastate(), identity);

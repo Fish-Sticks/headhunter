@@ -23,7 +23,7 @@ public:
 	void register_globals() const;
 	std::uintptr_t get_global_state() const;
 	void set_fps(double fps) const;
-
+	void run_bytecode(const std::string& bytecode) const;
 
 	friend int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, int a2);
 };
