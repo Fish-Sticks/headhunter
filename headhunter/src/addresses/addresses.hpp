@@ -15,31 +15,31 @@ namespace func_defs
 
 namespace addresses
 {
-	const std::uintptr_t rbx_getscheduler_addy = current_module + 0xE130F0;
-	const std::uintptr_t rbx_output_addy = current_module + 0x228740;
-	const std::uintptr_t rbx_getstate_addy = current_module + 0x003C7270;
-	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x0131E380; // LIMITED TO 512 CHARACTERS
+	const std::uintptr_t rbx_getscheduler_addy = current_module + 0x00DF21A0;
+	const std::uintptr_t rbx_output_addy = current_module + 0x229BB0;
+	const std::uintptr_t rbx_getstate_addy = current_module + 0x3C4050;
+	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x12DBC70; // LIMITED TO 512 CHARACTERS
 
-	const std::uintptr_t spawn_func_addy = current_module + 0x003E8CE0;
-	const std::uintptr_t deserializer_func_addy = current_module + 0x13224A0;
+	const std::uintptr_t spawn_func_addy = current_module + 0x003E3760;
+	const std::uintptr_t deserializer_func_addy = current_module + 0x12DFDA0;
 
-	const std::uintptr_t pushcclosure_addy = current_module + 0x1346A60;
-	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x01346CDC;
+	const std::uintptr_t pushcclosure_addy = current_module + 0x01302F90;
+	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x0130320F;
 
-	const std::uintptr_t setglobal_addy = current_module + 0x01348CF0;
-	const std::uintptr_t setglobal_exit_addy = current_module + 0x0134AE17;
-	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x01348D40;
-	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x013490A8;
+	const std::uintptr_t setglobal_addy = current_module + 0x01305030;
+	const std::uintptr_t setglobal_exit_addy = current_module + 0x01306E90;
+	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x01305088;
+	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x01305422;
 
-	const std::uintptr_t psuedo2adr_addy = current_module + 0x0131E540;
+	const std::uintptr_t psuedo2adr_addy = current_module + 0x12DBE30;
 
-	const std::uintptr_t fake_ret_addy = current_module + 0x00F73C3E; // reg jmp
+	const std::uintptr_t fake_ret_addy = current_module + 0x00232DC6; // reg jmp
 
-	const std::uintptr_t callcheck_addy_1 = current_module + 0x2C24AF8; // data ptr
-	const std::uintptr_t callcheck_addy_2 = current_module + 0x0022EE17; // code ptr
-	const std::uintptr_t callcheck_addy_3 = current_module + 0x013AB8DA; // VM callcheck
+	const std::uintptr_t callcheck_addy_1 = current_module + 0x297C09C; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x002301D9; // code ptr
+	const std::uintptr_t callcheck_addy_3 = current_module + 0x01363889; // VM callcheck
 
-	const std::uintptr_t xor_const = current_module + 0x2A01520;
+	const std::uintptr_t xor_const = current_module + 0x29C3FD0;
 }
 
 namespace offsets
@@ -70,8 +70,8 @@ namespace offsets
 
 	namespace luastate
 	{
-		constexpr std::uintptr_t top = 8;
-		constexpr std::uintptr_t base = 16;
+		constexpr std::uintptr_t top = 0xC;
+		constexpr std::uintptr_t base = 0x1C;
 	}
 
 	namespace luafunc

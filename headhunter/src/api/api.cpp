@@ -97,7 +97,7 @@ std::uint32_t rbx_gettop(std::uintptr_t rl)
 
 std::uintptr_t rbx_decryptfunc(std::uintptr_t func)
 {
-	return (func + offsets::luafunc::func) - *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func);
+	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) - (func + offsets::luafunc::func);
 }
 
 void rbx_pushnumber(std::uintptr_t rl, double num)
@@ -232,8 +232,8 @@ void __declspec(naked) rbx_setglobal_jump()
 	__asm
 	{
 		mov edx, key
-		mov[esp + 0x28], edx
-		mov[esp + 0xA0], edx
+		mov[esp + 0x18], edx
+		mov[esp + 0x70], edx
 		pushad
 	}
 
@@ -282,36 +282,36 @@ unsigned int luaS_hash(const char* str, size_t len)
 void rbx_pushstring(std::uintptr_t rl, const std::string& str)
 {
 	size_t length = str.size() + 21;
-	std::uintptr_t global = (rl + 12) - *reinterpret_cast<std::uintptr_t*>(rl + 12);
+	std::uintptr_t global = *reinterpret_cast<std::uintptr_t*>(rl + 0x14) - (rl + 0x14);
 	const auto frealloc = *reinterpret_cast<std::uintptr_t(__cdecl**)(std::uintptr_t, std::uintptr_t, std::uintptr_t, size_t)>(global + 12);
 
 	std::uintptr_t tstring = frealloc(*reinterpret_cast<std::uintptr_t*>(global + 16), 0, 0, length);
 
 	unsigned int hash = luaS_hash(str.c_str(), str.size());
 
-	*reinterpret_cast<size_t*>(global + 44) += length;
-	*reinterpret_cast<size_t*>(global + 324 + 4 * *reinterpret_cast<byte*>(rl + 4)) += length;
+	*reinterpret_cast<size_t*>(global + 0x38) += length;
+	*reinterpret_cast<size_t*>(global + 0x144 + 4 * *reinterpret_cast<byte*>(rl + 4)) += length;
 
-	*reinterpret_cast<byte*>(tstring) = *reinterpret_cast<byte*>(global + 20) & 3;
-	*reinterpret_cast<byte*>(tstring + 1) = 5;
-	*reinterpret_cast<byte*>(tstring + 2) = *reinterpret_cast<byte*>(rl + 4);
+	*reinterpret_cast<byte*>(tstring) = *reinterpret_cast<byte*>(rl + 4);
+	*reinterpret_cast<byte*>(tstring + 1) = *reinterpret_cast<byte*>(global + 20) & 3;
+	*reinterpret_cast<byte*>(tstring + 2) = 5;
 
-	*reinterpret_cast<std::uint32_t*>(tstring + 12) = hash - (tstring + 12); // hash
-	*reinterpret_cast<std::size_t*>(tstring + 16) = tstring + 16 - str.size(); // strlen
+	*reinterpret_cast<std::uint32_t*>(tstring + 12) = (tstring + 12) - hash; // hash
+	*reinterpret_cast<std::size_t*>(tstring + 16) = (tstring + 16) + str.size(); // strlen
 
 	memcpy(reinterpret_cast<void*>(tstring + 20), str.c_str(), str.size()); // string itself
 	*reinterpret_cast<char*>(tstring + str.size() + 20) = '/0'; // null terminate string
 
-	const auto meme = *reinterpret_cast<std::uint16_t(__cdecl**)(std::uintptr_t, std::uintptr_t)>(global + 2136);
+	const auto meme = *reinterpret_cast<std::uint16_t(__cdecl**)(std::uintptr_t, std::uintptr_t)>(global + 0x858);
 	std::uint16_t res = -1;
 	if (meme)
 		res = meme(tstring + 20, str.size()); // atom
 
-	std::uint32_t speedrun = 4 * (hash & (*reinterpret_cast<std::uint32_t*>(global + 8) - 1)); // put shit together like legos, cba to read lua docs so just this is made from memory lol
+	std::uint32_t speedrun = 4 * (hash & (*reinterpret_cast<std::uint32_t*>(global) - 1)); // put shit together like legos, cba to read lua docs so just this is made from memory lol
 	*reinterpret_cast<std::uint16_t*>(tstring + 4) = res;
-	*reinterpret_cast<std::uint32_t*>(tstring + 8) = *reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 4));
-	*reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 4)) = tstring;
-	++*reinterpret_cast<std::uint32_t*>(global);
+	*reinterpret_cast<std::uint32_t*>(tstring + 8) = *reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 8));
+	*reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 8)) = tstring;
+	++*reinterpret_cast<std::uint32_t*>(global + 4);
 
 	std::uintptr_t* top = reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top); // push
 	*reinterpret_cast<std::uint32_t*>(*top) = tstring;

@@ -1,6 +1,5 @@
 #include <Windows.h>
 #include <thread>
-#include <fstream>
 
 #include "console/console.h"
 #include "scheduler/scheduler.h"
