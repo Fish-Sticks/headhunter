@@ -22,8 +22,8 @@ game:HttpGet & HttpGet
 
 DISCORD RPC API:
 
-set_custom_rpc(table: SETTINGS)   ; Sets a custom RPC with table of settings, settings are below
-clear_custom_rpc()                ; Clears your RPC and only shows the client name
+`set_custom_rpc(table: SETTINGS)   ; Sets a custom RPC with table of settings, settings are below`
+`clear_custom_rpc()                ; Clears your RPC and only shows the client name`
 
 ```lua
 {
