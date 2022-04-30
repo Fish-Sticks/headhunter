@@ -16,7 +16,8 @@ extern std::uintptr_t rbx_decryptfunc(std::uintptr_t func);
 extern void rbx_pushnumber(std::uintptr_t rl, double num);
 extern std::uint32_t rbx_gettop(std::uintptr_t rl);
 extern void rbx_pushstring(std::uintptr_t rl, const std::string& str);
-
+extern int rbx_rawgetfield(std::uintptr_t rl, int idx, const std::string& k);
+extern std::uintptr_t* index2adr(std::uintptr_t rl, int idx);
 
 extern func_defs::rbx_getscheduler_t rbx_getscheduler;
 extern func_defs::rbx_getstate_t rbx_getstate;

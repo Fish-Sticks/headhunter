@@ -22,6 +22,20 @@
     <ClCompile Include="src\api\api.cpp" />
     <ClCompile Include="src\communication\communication.cpp" />
     <ClCompile Include="src\console\console.cpp" />
+    <ClCompile Include="src\discord\achievement_manager.cpp" />
+    <ClCompile Include="src\discord\activity_manager.cpp" />
+    <ClCompile Include="src\discord\application_manager.cpp" />
+    <ClCompile Include="src\discord\core.cpp" />
+    <ClCompile Include="src\discord\image_manager.cpp" />
+    <ClCompile Include="src\discord\lobby_manager.cpp" />
+    <ClCompile Include="src\discord\network_manager.cpp" />
+    <ClCompile Include="src\discord\overlay_manager.cpp" />
+    <ClCompile Include="src\discord\relationship_manager.cpp" />
+    <ClCompile Include="src\discord\storage_manager.cpp" />
+    <ClCompile Include="src\discord\store_manager.cpp" />
+    <ClCompile Include="src\discord\types.cpp" />
+    <ClCompile Include="src\discord\user_manager.cpp" />
+    <ClCompile Include="src\discord\voice_manager.cpp" />
     <ClCompile Include="src\execution\execution.cpp" />
     <ClCompile Include="src\functions\functions.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -64,9 +78,33 @@
     <ClInclude Include="src\api\api.h" />
     <ClInclude Include="src\communication\communication.h" />
     <ClInclude Include="src\console\console.h" />
+    <ClInclude Include="src\discord\achievement_manager.h" />
+    <ClInclude Include="src\discord\activity_manager.h" />
+    <ClInclude Include="src\discord\application_manager.h" />
+    <ClInclude Include="src\discord\core.h" />
+    <ClInclude Include="src\discord\discord.h" />
+    <ClInclude Include="src\discord\event.h" />
+    <ClInclude Include="src\discord\ffi.h" />
+    <ClInclude Include="src\discord\headhunter_impl.hpp" />
+    <ClInclude Include="src\discord\image_manager.h" />
+    <ClInclude Include="src\discord\lobby_manager.h" />
+    <ClInclude Include="src\discord\network_manager.h" />
+    <ClInclude Include="src\discord\overlay_manager.h" />
+    <ClInclude Include="src\discord\relationship_manager.h" />
+    <ClInclude Include="src\discord\storage_manager.h" />
+    <ClInclude Include="src\discord\store_manager.h" />
+    <ClInclude Include="src\discord\types.h" />
+    <ClInclude Include="src\discord\user_manager.h" />
+    <ClInclude Include="src\discord\voice_manager.h" />
     <ClInclude Include="src\execution\execution.h" />
     <ClInclude Include="src\functions\functions.h" />
     <ClInclude Include="src\scheduler\scheduler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dependencies\kord\discord_game_sdk.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="dependencies\kord\discord_game_sdk.dll.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -133,7 +171,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ProjectDir)dependencies\lib</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ProjectDir)dependencies\kord;$(ProjectDir)dependencies\lib</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\intermediate\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -192,7 +230,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src\;$(ProjectDir)dependencies\;$(ProjectDir)dependencies\luau;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -200,7 +238,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>Luau.Analysis.lib;Luau.VM.lib;Luau.Ast.lib;Luau.Compiler.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Luau.Analysis.lib;Luau.VM.lib;Luau.Ast.lib;Luau.Compiler.lib;wininet.lib;discord_game_sdk.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <Version>69</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

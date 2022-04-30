@@ -4,6 +4,8 @@
 #include <stack>
 #include <mutex>
 #include "functions/functions.h"
+#include "discord/headhunter_impl.hpp"
+
 
 std::mutex mutex;
 std::stack<std::string> script_queue;
@@ -16,6 +18,8 @@ std::uint8_t roblox_encoder_t::encodeOp(const std::uint8_t opcode)
 
 int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, int a2)
 {
+	headhunter_rpc_t::get().run_callback();
+
 	std::unique_lock<std::mutex> guard{ mutex };
 	std::uintptr_t rl = execution.scheduler->get_global_luastate();
 
@@ -102,6 +106,12 @@ void execution_t::register_globals() const // make sure they get registered on t
 
 		rbx_pushcclosure(rl, custom_funcs::httpget);
 		rbx_setglobal(rl, "HttpGet");
+
+		rbx_pushcclosure(rl, custom_funcs::config_custom_rpc);
+		rbx_setglobal(rl, "config_custom_rpc");
+
+		rbx_pushcclosure(rl, custom_funcs::clear_custom_rpc);
+		rbx_setglobal(rl, "clear_custom_rpc");
 
 		output << console::color::pink << "Successfully registered custom funcs!\n";
 

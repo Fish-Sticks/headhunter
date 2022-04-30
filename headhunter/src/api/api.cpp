@@ -97,7 +97,7 @@ std::uint32_t rbx_gettop(std::uintptr_t rl)
 
 std::uintptr_t rbx_decryptfunc(std::uintptr_t func)
 {
-	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) - (func + offsets::luafunc::func);
+	return *reinterpret_cast<std::uintptr_t*>(func + offsets::luafunc::func) + (func + offsets::luafunc::func);
 }
 
 void rbx_pushnumber(std::uintptr_t rl, double num)
@@ -232,8 +232,8 @@ void __declspec(naked) rbx_setglobal_jump()
 	__asm
 	{
 		mov edx, key
-		mov[esp + 0x18], edx
-		mov[esp + 0x70], edx
+		mov[esp + 0x20], edx
+		mov[esp + 0xB0], edx
 		pushad
 	}
 
@@ -279,10 +279,10 @@ unsigned int luaS_hash(const char* str, size_t len)
 	return h;
 }
 
-void rbx_pushstring(std::uintptr_t rl, const std::string& str)
+std::uintptr_t rbx_newstr(std::uintptr_t rl, const std::string& str)
 {
 	size_t length = str.size() + 21;
-	std::uintptr_t global = *reinterpret_cast<std::uintptr_t*>(rl + 0x14) - (rl + 0x14);
+	std::uintptr_t global = (rl + 0x18) - *reinterpret_cast<std::uintptr_t*>(rl + 0x18);
 	const auto frealloc = *reinterpret_cast<std::uintptr_t(__cdecl**)(std::uintptr_t, std::uintptr_t, std::uintptr_t, size_t)>(global + 12);
 
 	std::uintptr_t tstring = frealloc(*reinterpret_cast<std::uintptr_t*>(global + 16), 0, 0, length);
@@ -292,12 +292,12 @@ void rbx_pushstring(std::uintptr_t rl, const std::string& str)
 	*reinterpret_cast<size_t*>(global + 0x38) += length;
 	*reinterpret_cast<size_t*>(global + 0x144 + 4 * *reinterpret_cast<byte*>(rl + 4)) += length;
 
-	*reinterpret_cast<byte*>(tstring) = *reinterpret_cast<byte*>(rl + 4);
-	*reinterpret_cast<byte*>(tstring + 1) = *reinterpret_cast<byte*>(global + 20) & 3;
-	*reinterpret_cast<byte*>(tstring + 2) = 5;
+	*reinterpret_cast<byte*>(tstring) = *reinterpret_cast<byte*>(global + 20) & 3;
+	*reinterpret_cast<byte*>(tstring + 1) = 5;
+	*reinterpret_cast<byte*>(tstring + 2) = *reinterpret_cast<byte*>(rl + 4);
 
-	*reinterpret_cast<std::uint32_t*>(tstring + 12) = (tstring + 12) - hash; // hash
-	*reinterpret_cast<std::size_t*>(tstring + 16) = (tstring + 16) + str.size(); // strlen
+	*reinterpret_cast<std::uint32_t*>(tstring + 12) = (tstring + 12) ^ hash; // hash
+	*reinterpret_cast<std::size_t*>(tstring + 16) = str.size() - (tstring + 16); // strlen
 
 	memcpy(reinterpret_cast<void*>(tstring + 20), str.c_str(), str.size()); // string itself
 	*reinterpret_cast<char*>(tstring + str.size() + 20) = '/0'; // null terminate string
@@ -307,14 +307,74 @@ void rbx_pushstring(std::uintptr_t rl, const std::string& str)
 	if (meme)
 		res = meme(tstring + 20, str.size()); // atom
 
-	std::uint32_t speedrun = 4 * (hash & (*reinterpret_cast<std::uint32_t*>(global) - 1)); // put shit together like legos, cba to read lua docs so just this is made from memory lol
 	*reinterpret_cast<std::uint16_t*>(tstring + 4) = res;
-	*reinterpret_cast<std::uint32_t*>(tstring + 8) = *reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 8));
-	*reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 8)) = tstring;
-	++*reinterpret_cast<std::uint32_t*>(global + 4);
+
+	std::uint32_t speedrun = 4 * (hash & (*reinterpret_cast<std::uint32_t*>(global + 8) - 1)); // put shit together like legos, cba to read lua docs so just this is made from memory lol
+	*reinterpret_cast<std::uint32_t*>(tstring + 8) = *reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 4));
+	*reinterpret_cast<std::uint32_t*>(speedrun + *reinterpret_cast<std::uint32_t*>(global + 4)) = tstring;
+	++*reinterpret_cast<std::uint32_t*>(global);
+
+	return tstring;
+}
+
+void rbx_pushstring(std::uintptr_t rl, const std::string& str)
+{
+	std::uintptr_t tstring = rbx_newstr(rl, str);
 
 	std::uintptr_t* top = reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top); // push
 	*reinterpret_cast<std::uint32_t*>(*top) = tstring;
 	*reinterpret_cast<std::uint32_t*>(*top + 12) = 5;
 	*top += 16;
+}
+
+std::uintptr_t* index2adr(std::uintptr_t rl, int idx)
+{
+	if (idx > 0)
+	{
+		return reinterpret_cast<std::uintptr_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::base) + (idx * 16) - 16);
+	}
+	else if (idx > -10000)
+	{
+		return reinterpret_cast<std::uintptr_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) + (idx * 16));
+	}
+	else
+	{
+		return rbx_psuedo2adr(rl, idx);
+	}
+}
+
+std::uintptr_t* rbx_luah_getstr(std::uintptr_t table, unsigned int hash) // im gonna be using hash directly, my strings don't get re-used like they're supposed to in newlstr cuz that's extra code LOL
+{
+	std::uintptr_t start_node = (table + 16) + *reinterpret_cast<std::uintptr_t*>(table + 16);
+	std::uintptr_t current_node = start_node + 32 * (hash & ((1 << *reinterpret_cast<byte*>(table + 4)) - 1));
+
+	for (;;)
+	{
+		std::uintptr_t key = (current_node + 16);
+		std::uintptr_t enc_hash = (*reinterpret_cast<std::uintptr_t*>(key) + 0xC);
+
+		if ((*reinterpret_cast<byte*>(key + 12) & 0xF) == 5 && (enc_hash ^ *reinterpret_cast<std::uintptr_t*>(enc_hash)) == hash)
+			return reinterpret_cast<std::uintptr_t*>(current_node);
+
+		std::uintptr_t next = *reinterpret_cast<std::uint32_t*>(key + 12) >> 4;
+		if (!next)
+			break;
+
+		current_node += (32 * next);
+	}
+
+	return const_cast<std::uintptr_t*>(addresses::nilobject);
+}
+
+int rbx_rawgetfield(std::uintptr_t rl, int idx, const std::string& k) // don't be a moron and feed this func (( not )) tables, I cba to check if it is :kekw: it's a meme anyways isn't it?
+{ // for the stupids out there, this is just like getfield except it doesn't invoke a metatable so it won't work on userdatas and only tables
+	std::uintptr_t table = *index2adr(rl, idx);
+	std::uintptr_t hash = luaS_hash(k.c_str(), k.length());
+
+	std::uintptr_t* value = rbx_luah_getstr(table, hash);
+
+	memcpy(*reinterpret_cast<std::uintptr_t**>(rl + offsets::luastate::top), value, 16);
+	*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) += 16;
+
+	return *reinterpret_cast<int*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 20);
 }

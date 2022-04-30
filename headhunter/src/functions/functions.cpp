@@ -3,6 +3,7 @@
 #include "console/console.h"
 #include "api/api.h"
 #include "execution/execution.h"
+#include "discord/headhunter_impl.hpp"
 
 #include <intrin.h>
 #include <Wininet.h>
@@ -40,6 +41,48 @@ std::string DownloadString(std::string URL) {
 	}
 }
 
+auto get_string = [](std::uintptr_t rl, std::uintptr_t idx) -> std::string
+{
+	std::int32_t tt = *reinterpret_cast<std::int32_t*>(reinterpret_cast<std::uintptr_t>(index2adr(rl, idx)) + 12);
+
+	if (tt == 5)
+	{
+		std::uintptr_t tstring = *index2adr(rl, idx);
+		return std::string(reinterpret_cast<const char*>(tstring + 0x14), *reinterpret_cast<std::size_t*>(tstring + 16) + (tstring + 16));
+	}
+	else
+		return "";
+};
+
+auto get_number = [](std::uintptr_t rl, std::uintptr_t idx) -> double
+{
+	std::int32_t tt = *reinterpret_cast<std::int32_t*>(reinterpret_cast<std::uintptr_t>(index2adr(rl, idx)) + 12);
+
+	if (tt == 2)
+	{
+		__m128d a = _mm_load_sd(reinterpret_cast<double*>(index2adr(rl, idx)));
+		__m128d b = _mm_load_pd(reinterpret_cast<double*>(addresses::xor_const));
+		__m128d res = _mm_xor_pd(a, b);
+		double done = _mm_cvtsd_f64(res);
+
+		return done;
+	}
+	else
+		return 0;
+};
+
+auto get_boolean = [](std::uintptr_t rl, std::uintptr_t idx) -> bool
+{
+	std::int32_t tt = *reinterpret_cast<std::int32_t*>(reinterpret_cast<std::uintptr_t>(index2adr(rl, idx)) + 12);
+
+	if (tt == 1)
+	{
+		return *reinterpret_cast<bool*>(index2adr(rl, idx));
+	}
+	else
+		return 0;
+};
+
 namespace custom_funcs
 {
 	int setreadonly(std::uintptr_t rl)
@@ -58,7 +101,7 @@ namespace custom_funcs
 
 		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0x8 : 0x1C);
 
-		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) - enc_mt)
+		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) + enc_mt)
 		{
 			*reinterpret_cast<std::uintptr_t*>(top) = mt;
 			*reinterpret_cast<std::uintptr_t*>(top + 12) = 9;
@@ -70,12 +113,7 @@ namespace custom_funcs
 
 	int setfpscap(std::uintptr_t rl)
 	{
-		__m128d a = _mm_load_sd(*reinterpret_cast<double**>(rl + offsets::luastate::base));
-		__m128d b = _mm_load_pd(reinterpret_cast<double*>(addresses::xor_const));
-		__m128d res = _mm_xor_pd(a, b);
-		double done = _mm_cvtsd_f64(res);
-
-		execution.set_fps(done);
+		execution.set_fps(get_number(rl, 1));
 		return 0;
 	}
 
@@ -87,15 +125,8 @@ namespace custom_funcs
 
 	int loadstring(std::uintptr_t rl)
 	{
-		std::string loaded_string;
-
-		std::uintptr_t string = **reinterpret_cast<std::uintptr_t**>(rl + offsets::luastate::base);
-		std::printf("string size: %d\n", *reinterpret_cast<std::uintptr_t*>(string + 16) - (string + 16));
-
-		loaded_string.append(reinterpret_cast<const char*>(string + 0x14), *reinterpret_cast<std::uintptr_t*>(string + 16) - (string + 16));
-
 		roblox_encoder_t roblox_encoder{};
-		const std::string compiled = Luau::compile(loaded_string, {}, {}, &roblox_encoder);
+		const std::string compiled = Luau::compile(get_string(rl, 1), {}, {}, &roblox_encoder);
 		rbx_deserialize(rl, "headhunter.exe", compiled.c_str(), compiled.size());
 		return 1;
 	}
@@ -119,8 +150,84 @@ namespace custom_funcs
 
 	int httpget(std::uintptr_t rl)
 	{
-		const char* URL = **reinterpret_cast<const char***>(rl + offsets::luastate::base) + 0x14;
-		rbx_pushstring(rl, DownloadString(URL));
+		rbx_pushstring(rl, DownloadString(get_string(rl, 1)));
 		return 1;
+	}
+
+	int config_custom_rpc(std::uintptr_t rl)
+	{
+		if (*reinterpret_cast<std::uint32_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::base) + 12) != 9)
+		{
+			std::printf("table expected!\n");
+			return 0;
+		}
+		
+		rbx_rawgetfield(rl, 1, "name");
+		std::string name = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "state");
+		std::string state = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "details");
+		std::string details = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "activity_type");
+		std::string activity_type = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "large_image_key");
+		std::string large_image_key = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "small_image_key");
+		std::string small_image_key = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "large_image_text");
+		std::string large_image_text = get_string(rl, -1);
+
+		rbx_rawgetfield(rl, 1, "small_image_text");
+		std::string small_image_text = get_string(rl, -1);
+
+		std::uint64_t id = 0;
+		try { // "bandaid code" - iivillian
+			rbx_rawgetfield(rl, 1, "client_id");
+			id = std::stoull(get_string(rl, -1));
+		}
+		catch (...) {};
+
+		rbx_rawgetfield(rl, 1, "enable_time_elapsed");
+		bool result = get_boolean(rl, -1);
+
+		headhunter_rpc_t& hh_rpc = headhunter_rpc_t::get();
+		hh_rpc.set_name(name);
+		hh_rpc.set_state(state);
+		hh_rpc.set_details(details);
+		hh_rpc.set_activity_type(activity_type);
+		hh_rpc.set_large_image_key(large_image_key);
+		hh_rpc.set_small_image_key(small_image_key);
+		hh_rpc.set_large_image_text(large_image_text);
+		hh_rpc.set_small_image_text(small_image_text);
+
+		if (result)
+			hh_rpc.set_date_start(std::time(0));
+		else
+			hh_rpc.set_date_start(0);
+		
+		if (id != hh_rpc.get_application_id() && id != 0)
+		{
+			hh_rpc.get_core()->~Core();
+			discord::Core* new_core;
+			discord::Core::Create(id, DiscordCreateFlags_Default, &new_core);
+			hh_rpc.set_core(new_core);
+		}
+
+		hh_rpc.set_application_id(id);
+		hh_rpc.update_activity();
+		return 1;
+	}
+
+	int clear_custom_rpc(std::uintptr_t rl)
+	{
+		headhunter_rpc_t::get().set_application_id(0);
+		headhunter_rpc_t::get().clear_activity();
+		return 0;
 	}
 }
