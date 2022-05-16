@@ -18,27 +18,28 @@ std::string Replace(std::string subject, const std::string& search,
 	return subject;
 }
 
-std::string DownloadString(std::string URL) {
+std::string DownloadString(const std::string& URL) 
+{
+	std::string rtn{};
+	char buffer[2000];
 
 	HINTERNET interwebs = InternetOpen("Mozilla/5.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
-	HINTERNET urlFile;
-	std::string rtn;
-	if (interwebs) {
-		urlFile = InternetOpenUrl(interwebs, URL.c_str(), NULL, NULL, NULL, NULL);
-		if (urlFile) {
-			char buffer[2000];
-			DWORD bytesRead;
-			do {
-				InternetReadFile(urlFile, buffer, 2000, &bytesRead);
-				rtn.append(buffer, bytesRead);
-				memset(buffer, 0, 2000);
-			} while (bytesRead);
-			InternetCloseHandle(interwebs);
-			InternetCloseHandle(urlFile);
-			std::string p = Replace(rtn, "|n", "\r\n");
-			return p;
-		}
-	}
+	if (!interwebs) return rtn;
+
+	HINTERNET urlFile = InternetOpenUrl(interwebs, URL.c_str(), NULL, NULL, NULL, NULL);
+	if (!urlFile) return rtn;
+
+	DWORD bytesRead;
+	do {
+		InternetReadFile(urlFile, buffer, 2000, &bytesRead);
+		rtn.append(buffer, bytesRead);
+		memset(buffer, 0, 2000);
+	} while (bytesRead);
+
+	InternetCloseHandle(interwebs);
+	InternetCloseHandle(urlFile);
+
+	return Replace(rtn, "|n", "\r\n");
 }
 
 auto get_string = [](std::uintptr_t rl, std::uintptr_t idx) -> std::string
