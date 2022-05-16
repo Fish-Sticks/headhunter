@@ -8,16 +8,24 @@ console::console(const std::string& title)
 	VirtualProtect(&FreeConsole, 1, old, &old);
 
 	AllocConsole();
-	freopen_s(&this->f_ptr, "CONOUT$", "w", stdout);
-	freopen_s(&this->f_ptr, "CONOUT$", "w", stderr);
-	freopen_s(&this->f_ptr, "CONIN$", "r", stdin);
+	freopen_s(&this->f_ptr[0], "CONOUT$", "w", stdout);
+	freopen_s(&this->f_ptr[1], "CONOUT$", "w", stderr);
+	freopen_s(&this->f_ptr[2], "CONIN$", "r", stdin);
 
 	SetConsoleTitleA(title.c_str());
 }
 
 console::~console()
 {
-	fclose(this->f_ptr);
+	fclose(this->f_ptr[0]);
+	fclose(this->f_ptr[1]);
+	fclose(this->f_ptr[2]);
+
+	DWORD old;
+	VirtualProtect(&FreeConsole, 1, PAGE_EXECUTE_READWRITE, &old);
+	*reinterpret_cast<byte*>(&FreeConsole) = 0xFF;
+	VirtualProtect(&FreeConsole, 1, old, &old);
+
 	FreeConsole();
 }
 

@@ -17,7 +17,9 @@ const communication_t communication{};
 
 void mainfunc()
 {
+    output << console::color::cyan << (DWORD)&FreeConsole;
     output << console::color::cyan << "Welcome to headhunter! A simple exploit made by fishy.\n";
+    return;
     output << console::color::white << "Current scheduler: 0x" << scheduler.get() << "\n";
 
     scheduler.print_jobs();

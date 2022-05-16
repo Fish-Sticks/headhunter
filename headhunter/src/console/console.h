@@ -5,7 +5,7 @@
 class console
 {
 private:
-	FILE* f_ptr = nullptr;
+	FILE* f_ptr[3]{};
 public:
 	enum class color
 	{
