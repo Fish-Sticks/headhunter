@@ -7,14 +7,20 @@
 #include "lstate.h"
 
 /*
+** Default settings for GC tunables (settable via lua_gc)
+*/
+#define LUAI_GCGOAL 200    /* 200% (allow heap to double compared to live heap size) */
+#define LUAI_GCSTEPMUL 200 /* GC runs 'twice the speed' of memory allocation */
+#define LUAI_GCSTEPSIZE 1  /* GC runs every KB of memory allocation */
+
+/*
 ** Possible states of the Garbage Collector
 */
 #define GCSpause 0
 #define GCSpropagate 1
 #define GCSpropagateagain 2
 #define GCSatomic 3
-#define GCSsweepstring 4
-#define GCSsweep 5
+#define GCSsweep 4
 
 /*
 ** macro to tell when main invariant (white objects cannot point to black
@@ -76,7 +82,7 @@
 
 #define luaC_checkGC(L) \
     { \
-        condhardstacktests(luaD_reallocstack(L, L->stacksize - EXTRA_STACK - 1)); \
+        condhardstacktests(luaD_reallocstack(L, L->stacksize - EXTRA_STACK)); \
         if (L->global->totalbytes >= L->global->GCthreshold) \
         { \
             condhardmemtests(luaC_validate(L), 1); \
@@ -112,15 +118,9 @@
             luaC_barrierf(L, obj2gco(p), obj2gco(o)); \
     }
 
-#define luaC_objbarriert(L, t, o) \
-    { \
-        if (isblack(obj2gco(t)) && iswhite(obj2gco(o))) \
-            luaC_barriertable(L, t, obj2gco(o)); \
-    }
-
 #define luaC_upvalbarrier(L, uv, tv) \
     { \
-        if (iscollectable(tv) && iswhite(gcvalue(tv)) && (!(uv) || ((UpVal*)uv)->v != &((UpVal*)uv)->u.value)) \
+        if (iscollectable(tv) && iswhite(gcvalue(tv)) && (!(uv) || (uv)->v != &(uv)->u.value)) \
             luaC_barrierupval(L, gcvalue(tv)); \
     }
 
@@ -130,13 +130,13 @@
             luaC_wakethread(L); \
     }
 
-#define luaC_link(L, o, tt) luaC_linkobj(L, cast_to(GCObject*, (o)), tt)
+#define luaC_init(L, o, tt) luaC_initobj(L, cast_to(GCObject*, (o)), tt)
 
 LUAI_FUNC void luaC_freeall(lua_State* L);
-LUAI_FUNC void luaC_step(lua_State* L, bool assist);
+LUAI_FUNC size_t luaC_step(lua_State* L, bool assist);
 LUAI_FUNC void luaC_fullgc(lua_State* L);
-LUAI_FUNC void luaC_linkobj(lua_State* L, GCObject* o, uint8_t tt);
-LUAI_FUNC void luaC_linkupval(lua_State* L, UpVal* uv);
+LUAI_FUNC void luaC_initobj(lua_State* L, GCObject* o, uint8_t tt);
+LUAI_FUNC void luaC_initupval(lua_State* L, UpVal* uv);
 LUAI_FUNC void luaC_barrierupval(lua_State* L, GCObject* v);
 LUAI_FUNC void luaC_barrierf(lua_State* L, GCObject* o, GCObject* v);
 LUAI_FUNC void luaC_barriertable(lua_State* L, Table* t, GCObject* v);

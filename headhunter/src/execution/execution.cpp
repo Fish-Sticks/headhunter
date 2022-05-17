@@ -95,6 +95,9 @@ void execution_t::register_globals() const // make sure they get registered on t
 		rbx_pushcclosure(rl, custom_funcs::getfuncaddy);
 		rbx_setglobal(rl, "getfuncaddy");
 
+		rbx_pushcclosure(rl, custom_funcs::getinstanceaddy);
+		rbx_setglobal(rl, "getinstanceaddy");
+
 		rbx_pushcclosure(rl, custom_funcs::getnamecallmethod);
 		rbx_setglobal(rl, "getnamecallmethod");
 

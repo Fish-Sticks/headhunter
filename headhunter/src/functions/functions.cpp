@@ -48,7 +48,7 @@ auto get_string = [](std::uintptr_t rl, std::uintptr_t idx) -> std::string
 	if (tt == 5)
 	{
 		std::uintptr_t tstring = *index2adr(rl, idx);
-		return std::string(reinterpret_cast<const char*>(tstring + 0x14), *reinterpret_cast<std::size_t*>(tstring + 16) + (tstring + 16));
+		return std::string(reinterpret_cast<const char*>(tstring + 0x14), *reinterpret_cast<std::size_t*>(tstring + 16) - (tstring + 16));
 	}
 	else
 		return "";
@@ -58,7 +58,7 @@ auto get_number = [](std::uintptr_t rl, std::uintptr_t idx) -> double
 {
 	std::int32_t tt = *reinterpret_cast<std::int32_t*>(reinterpret_cast<std::uintptr_t>(index2adr(rl, idx)) + 12);
 
-	if (tt == 2)
+	if (tt == 3)
 	{
 		__m128d a = _mm_load_sd(reinterpret_cast<double*>(index2adr(rl, idx)));
 		__m128d b = _mm_load_pd(reinterpret_cast<double*>(addresses::xor_const));
@@ -88,7 +88,7 @@ namespace custom_funcs
 	int setreadonly(std::uintptr_t rl)
 	{
 		std::uintptr_t table_val = *reinterpret_cast<std::uintptr_t*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 32);
-		*reinterpret_cast<bool*>(table_val + 7) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
+		*reinterpret_cast<bool*>(table_val + 3) = *reinterpret_cast<bool*>(*reinterpret_cast<std::uintptr_t*>(rl + offsets::luastate::top) - 16);
 		return 0;
 	}
 
@@ -99,9 +99,9 @@ namespace custom_funcs
 
 		std::uintptr_t enc_mt = 0;
 
-		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 6 ? 0x8 : 0x1C);
+		enc_mt = *reinterpret_cast<std::uintptr_t*>(base) + (*reinterpret_cast<std::uint32_t*>(base + 12) == 8 ? 0x08 : 0x1C);
 
-		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) + enc_mt)
+		if (std::uintptr_t mt = *reinterpret_cast<std::uintptr_t*>(enc_mt) - enc_mt)
 		{
 			*reinterpret_cast<std::uintptr_t*>(top) = mt;
 			*reinterpret_cast<std::uintptr_t*>(top + 12) = 9;
@@ -119,8 +119,8 @@ namespace custom_funcs
 
 	int setidentity(std::uintptr_t rl) // DIY
 	{
-		output << console::color::red << "this ones for you to make!\n";
-		return 0;
+		output << console::color::red << "This ones for you to create!\n";
+		return 1;
 	}
 
 	int loadstring(std::uintptr_t rl)
@@ -135,6 +135,14 @@ namespace custom_funcs
 	{
 		std::uintptr_t func = rbx_decryptfunc(**reinterpret_cast<std::uintptr_t**>(rl + offsets::luastate::base));
 		printf_s("0x%08X\n", func - reinterpret_cast<std::uintptr_t>(GetModuleHandle(NULL)));
+		return 0;
+	}
+
+	int getinstanceaddy(std::uintptr_t rl)
+	{
+		std::uintptr_t instance = **reinterpret_cast<std::uintptr_t**>(rl + offsets::luastate::base);
+		std::printf("Instance: 0x%08X\n", instance);
+		std::cin.get();
 		return 0;
 	}
 

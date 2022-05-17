@@ -11,12 +11,10 @@
 typedef union GCObject GCObject;
 
 /*
-** Common Header for all collectible objects (in macro form, to be
-** included in other objects)
+** Common Header for all collectible objects (in macro form, to be included in other objects)
 */
 // clang-format off
 #define CommonHeader \
-    GCObject* next; \
      uint8_t tt; uint8_t marked; uint8_t memcat
 // clang-format on
 
@@ -78,15 +76,7 @@ typedef struct lua_TValue
 #define thvalue(o) check_exp(ttisthread(o), &(o)->value.gc->th)
 #define upvalue(o) check_exp(ttisupval(o), &(o)->value.gc->uv)
 
-// beware bit magic: a value is false if it's nil or boolean false
-// baseline implementation: (ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))
-// we'd like a branchless version of this which helps with performance, and a very fast version
-// so our strategy is to always read the boolean value (not using bvalue(o) because that asserts when type isn't boolean)
-// we then combine it with type to produce 0/1 as follows:
-// - when type is nil (0), & makes the result 0
-// - when type is boolean (1), we effectively only look at the bottom bit, so result is 0 iff boolean value is 0
-// - when type is different, it must have some of the top bits set - we keep all top bits of boolean value so the result is non-0
-#define l_isfalse(o) (!(((o)->value.b | ~1) & ttype(o)))
+#define l_isfalse(o) (ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))
 
 /*
 ** for internal debug only
@@ -237,8 +227,12 @@ typedef TValue* StkId; /* index to stack elements */
 typedef struct TString
 {
     CommonHeader;
+    // 1 byte padding
 
     int16_t atom;
+    // 2 byte padding
+
+    TString* next; // next string in the hash table bucket or the string buffer linked list
 
     unsigned int hash;
     unsigned int len;
@@ -297,6 +291,7 @@ typedef struct Proto
     int sizek;
     int sizelineinfo;
     int linegaplog2;
+    int linedefined;
 
 
     uint8_t nups; /* number of upvalues */
@@ -321,14 +316,21 @@ typedef struct LocVar
 typedef struct UpVal
 {
     CommonHeader;
+    // 1 (x86) or 5 (x64) byte padding
     TValue* v; /* points to stack or to its own value */
     union
     {
         TValue value; /* the value (when closed) */
         struct
-        { /* double linked list (when open) */
+        {
+            /* global double linked list (when open) */
             struct UpVal* prev;
             struct UpVal* next;
+
+            /* thread double linked list (when open) */
+            struct UpVal* threadnext;
+            /* note: this is the location of a pointer to this upvalue in the previous element that can be either an UpVal or a lua_State */
+            struct UpVal** threadprev;
         } l;
     } u;
 } UpVal;

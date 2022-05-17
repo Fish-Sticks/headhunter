@@ -15,32 +15,32 @@ namespace func_defs
 
 namespace addresses
 {
-	const std::uintptr_t rbx_getscheduler_addy = current_module + 0xDE90B0;
-	const std::uintptr_t rbx_output_addy = current_module + 0x22A210;
-	const std::uintptr_t rbx_getstate_addy = current_module + 0x3C4310;
-	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x12D19D0; // LIMITED TO 512 CHARACTERS
+	const std::uintptr_t rbx_getscheduler_addy = current_module + 0xE00F50;
+	const std::uintptr_t rbx_output_addy = current_module + 0x22BE30;
+	const std::uintptr_t rbx_getstate_addy = current_module + 0x3C1160;
+	const std::uintptr_t rbx_pushvfstring_addy = current_module + 0x1341E90; // LIMITED TO 512 CHARACTERS
 
-	const std::uintptr_t spawn_func_addy = current_module + 0x3E3F80;
-	const std::uintptr_t deserializer_func_addy = current_module + 0x012D5BA0;
+	const std::uintptr_t spawn_func_addy = current_module + 0x3E1C30;
+	const std::uintptr_t deserializer_func_addy = current_module + 0x01346000;
 
-	const std::uintptr_t pushcclosure_addy = current_module + 0x12F92E0;
-	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x012F955E;
+	const std::uintptr_t pushcclosure_addy = current_module + 0x13683E0;
+	const std::uintptr_t pushcclosure_exit_addy = current_module + 0x01368655;
 
-	const std::uintptr_t setglobal_addy = current_module + 0x12FB410;
-	const std::uintptr_t setglobal_exit_addy = current_module + 0x012FD3AE;
-	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x012FB462;
-	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x012FB7E0;
+	const std::uintptr_t setglobal_addy = current_module + 0x136A300;
+	const std::uintptr_t setglobal_exit_addy = current_module + 0x0136BFC0;
+	const std::uintptr_t setglobal_patch_1_addy = current_module + 0x0136A358;
+	const std::uintptr_t setglobal_patch_2_addy = current_module + 0x0136A6E0;
 
-	const std::uintptr_t psuedo2adr_addy = current_module + 0x12D1B90;
+	const std::uintptr_t psuedo2adr_addy = current_module + 0x1342050;
 
-	const std::uintptr_t fake_ret_addy = current_module + 0x001F257F; // reg jmp
+	const std::uintptr_t fake_ret_addy = current_module + 0x002357E9; // reg jmp
 
-	const std::uintptr_t callcheck_addy_1 = current_module + 0x2C3C9A8; // data ptr
-	const std::uintptr_t callcheck_addy_2 = current_module + 0x00230657; // code ptr
-	const std::uintptr_t callcheck_addy_3 = current_module + 0x0135ADA9; // VM callcheck
+	const std::uintptr_t callcheck_addy_1 = current_module + 0x2C6B1F4; // data ptr
+	const std::uintptr_t callcheck_addy_2 = current_module + 0x00232277; // code ptr
+	const std::uintptr_t callcheck_addy_3 = current_module + 0x013C21C9; // VM callcheck
 
-	const std::uintptr_t xor_const = current_module + 0x2A11960;
-	static const std::uintptr_t* nilobject = reinterpret_cast<std::uintptr_t*>(current_module + 0x1E37AC8); // it doesn't like when i make it a pointer so it needs to be static, fucking C++
+	const std::uintptr_t xor_const = current_module + 0x2A3FC40;
+	static const std::uintptr_t* nilobject = reinterpret_cast<std::uintptr_t*>(current_module + 0x1E5D0B8); // it doesn't like when i make it a pointer so it needs to be static, fucking C++
 }
 
 namespace offsets
@@ -71,8 +71,8 @@ namespace offsets
 
 	namespace luastate
 	{
-		constexpr std::uintptr_t top = 0x10;
-		constexpr std::uintptr_t base = 0x14;
+		constexpr std::uintptr_t top = 0xC;
+		constexpr std::uintptr_t base = 0x10;
 	}
 
 	namespace luafunc

@@ -109,6 +109,23 @@ struct PrimitiveTypeVar
     }
 };
 
+struct ConstrainedTypeVar
+{
+    explicit ConstrainedTypeVar(TypeLevel level)
+        : level(level)
+    {
+    }
+
+    explicit ConstrainedTypeVar(TypeLevel level, const std::vector<TypeId>& parts)
+        : parts(parts)
+        , level(level)
+    {
+    }
+
+    std::vector<TypeId> parts;
+    TypeLevel level;
+};
+
 // Singleton types https://github.com/Roblox/luau/blob/master/rfcs/syntax-singleton-types.md
 // Types for true and false
 struct BooleanSingleton
@@ -248,6 +265,7 @@ struct FunctionTypeVar
     MagicFunction magicFunction = nullptr; // Function pointer, can be nullptr.
     bool hasSelf;
     Tags tags;
+    bool hasNoGenerics = false;
 };
 
 enum class TableState
@@ -311,7 +329,7 @@ struct TableTypeVar
     // We need to know which is which when we stringify types.
     std::optional<std::string> syntheticName;
 
-    std::map<Name, Location> methodDefinitionLocations;
+    std::map<Name, Location> methodDefinitionLocations; // TODO: Remove with FFlag::LuauNoMethodLocations
     std::vector<TypeId> instantiatedTypeParams;
     std::vector<TypePackId> instantiatedTypePackParams;
     ModuleName definitionModuleName;
@@ -355,15 +373,17 @@ struct ClassTypeVar
     std::optional<TypeId> metatable; // metaclass?
     Tags tags;
     std::shared_ptr<ClassUserData> userData;
+    ModuleName definitionModuleName;
 
-    ClassTypeVar(
-        Name name, Props props, std::optional<TypeId> parent, std::optional<TypeId> metatable, Tags tags, std::shared_ptr<ClassUserData> userData)
+    ClassTypeVar(Name name, Props props, std::optional<TypeId> parent, std::optional<TypeId> metatable, Tags tags,
+        std::shared_ptr<ClassUserData> userData, ModuleName definitionModuleName)
         : name(name)
         , props(props)
         , parent(parent)
         , metatable(metatable)
         , tags(tags)
         , userData(userData)
+        , definitionModuleName(definitionModuleName)
     {
     }
 };
@@ -418,8 +438,8 @@ struct LazyTypeVar
 
 using ErrorTypeVar = Unifiable::Error;
 
-using TypeVariant = Unifiable::Variant<TypeId, PrimitiveTypeVar, SingletonTypeVar, FunctionTypeVar, TableTypeVar, MetatableTypeVar, ClassTypeVar,
-    AnyTypeVar, UnionTypeVar, IntersectionTypeVar, LazyTypeVar>;
+using TypeVariant = Unifiable::Variant<TypeId, PrimitiveTypeVar, ConstrainedTypeVar, SingletonTypeVar, FunctionTypeVar, TableTypeVar,
+    MetatableTypeVar, ClassTypeVar, AnyTypeVar, UnionTypeVar, IntersectionTypeVar, LazyTypeVar>;
 
 struct TypeVar final
 {
@@ -436,6 +456,7 @@ struct TypeVar final
     TypeVar(const TypeVariant& ty, bool persistent)
         : ty(ty)
         , persistent(persistent)
+        , normal(persistent) // We assume that all persistent types are irreducable.
     {
     }
 
@@ -445,6 +466,10 @@ struct TypeVar final
     // Global type bindings are immutable but are reused many times.
     // Persistent TypeVars do not get cloned.
     bool persistent = false;
+
+    // Normalization sets this for types that are fully normalized.
+    // This implies that they are transitively immutable.
+    bool normal = false;
 
     std::optional<std::string> documentationSymbol;
 
@@ -458,7 +483,7 @@ struct TypeVar final
     TypeVar& operator=(TypeVariant&& rhs);
 };
 
-using SeenSet = std::set<std::pair<void*, void*>>;
+using SeenSet = std::set<std::pair<const void*, const void*>>;
 bool areEqual(SeenSet& seen, const TypeVar& lhs, const TypeVar& rhs);
 
 // Follow BoundTypeVars until we get to something real
@@ -488,6 +513,9 @@ const TableTypeVar* getTableType(TypeId type);
 // Returns nullptr if the type has no name.
 const std::string* getName(TypeId type);
 
+// Returns name of the module where type was defined if type has that information
+std::optional<ModuleName> getDefinitionModuleName(TypeId type);
+
 // Checks whether a union contains all types of another union.
 bool isSubset(const UnionTypeVar& super, const UnionTypeVar& sub);
 
@@ -510,6 +538,8 @@ struct SingletonTypes
     const TypeId stringType;
     const TypeId booleanType;
     const TypeId threadType;
+    const TypeId trueType;
+    const TypeId falseType;
     const TypeId anyType;
     const TypeId optionalNumberType;
 
@@ -539,6 +569,8 @@ void persist(TypePackId tp);
 
 const TypeLevel* getLevel(TypeId ty);
 TypeLevel* getMutableLevel(TypeId ty);
+
+std::optional<TypeLevel> getLevel(TypePackId tp);
 
 const Property* lookupClassProp(const ClassTypeVar* cls, const Name& name);
 bool isSubclass(const ClassTypeVar* cls, const ClassTypeVar* parent);

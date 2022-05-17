@@ -9,6 +9,7 @@ namespace custom_funcs
 	extern int setidentity(std::uintptr_t rl);
 	extern int loadstring(std::uintptr_t rl);
 	extern int getfuncaddy(std::uintptr_t rl);
+	extern int getinstanceaddy(std::uintptr_t rl);
 	extern int getnamecallmethod(std::uintptr_t rl);
 	extern int httpget(std::uintptr_t rl);
 	extern int config_custom_rpc(std::uintptr_t rl);

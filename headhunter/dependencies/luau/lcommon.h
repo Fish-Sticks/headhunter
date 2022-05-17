@@ -11,7 +11,7 @@
 // Luau consists of several components, including compiler (Ast, Compiler) and VM (virtual machine)
 // These components are fully independent, but they need a common set of utilities defined in this header
 // so it needs to be shared.
-#include "Luau/Common.h"
+#include "../../Ast/include/Luau/Common.h"
 
 typedef LUAI_USER_ALIGNMENT_T L_Umaxalign;
 
